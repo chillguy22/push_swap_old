@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/27 14:43:29 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/28 18:28:34 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,25 +185,97 @@ int	find_target(int num, int *b)
 	// return index of b
 }
 
-void	index_assign(int *big, int *small, int *b)
+void	index_assign(int *big, int *b)
 {
 	if (b[0] > b[1])
-	{
 		big = 0;
-		small = 1;
-	}
 	else
-	{
-		small = 0;
 		big = 1;
+}
+
+int	**create2DArray(int *array1, int length1, int *array2, int length2)
+{
+	int	**array2D;
+	int	i;
+
+	array2D = (int **)malloc(2 * sizeof(int *));
+	array2D[0] = (int *)malloc(length1 * sizeof(int));
+	array2D[1] = (int *)malloc(length2 * sizeof(int));
+	array2D[2] = (int *)malloc(1 * sizeof(int));
+	array2D[3] = (int *)malloc(1 * sizeof(int));
+	i = 0;
+	while (i < length1)
+	{
+		array2D[0][i] = array1[i];
+		i++;
+	}
+	i = 0;
+	while (i < length2)
+	{
+		array2D[1][i] = array2[i];
+		i++;
+	}
+	array2D[2][0] = length1;
+	array2D[3][0] = length2;
+	return (array2D); // remember to free
+}
+
+int	find_big_index(int *arr, int len)
+{
+	int	i;
+	int	maxIndex;
+
+	if (len <= 0)
+		return (-1);
+	i = 1;
+	maxIndex = 0;
+	while (i < len)
+	{
+		if (arr[i] > arr[maxIndex])
+			maxIndex = i;
+		i++;
+	}
+	return (maxIndex);
+}
+
+void	assign_targets(int *targets, int **lol, int biggest_index)
+{
+	int	i;
+	int	j;
+	int	temp;
+	int	diff;
+	int	difftemp;
+
+	i = 0;
+	while (i < lol[2][0])
+	{
+		j = 0;
+		diff = INT_MAX;
+		while (j < lol[3][0])
+		{
+			if ((lol[0][i] > lol[1][j]))
+			{
+				difftemp = lol[0][i] - lol[1][j];
+				if (difftemp < diff)
+				{
+					diff = difftemp;
+					temp = j;
+				}
+			}
+			j++;
+		}
+		if (diff == INT_MAX)
+			j = find_big_index(lol[1], lol[3][0]);
+		targets[i] = j;
+		i++;
 	}
 }
 
-void	sort4(int *a, int *len_a, int *b, int *len_b)
+void	sort(int *a, int *len_a, int *b, int *len_b)
 {
 	int	biggest_index;
-	int	smallest_index;
 	int	*targets;
+	int	**lol;
 
 	if (len_a == 4)
 	{
@@ -217,10 +289,12 @@ void	sort4(int *a, int *len_a, int *b, int *len_b)
 		push(*a, *len_a, *b, *len_b);
 		write(1, "pb\n", 3);
 	}
-	index_assign(biggest_index, smallest_index, *b);
+	index_assign(biggest_index, *b);
 	targets = (int *)malloc(sizeof(int) * (*len_a));
 	if (!targets)
 		exiterror1(a, b);
+	lol = create2DArray(a, len_a, b, len_b);
+	assign_targets(targets, lol, biggest_index);
 }
 
 int	*push_swap(int *a, int len_a)
@@ -238,7 +312,7 @@ int	*push_swap(int *a, int len_a)
 		sort2(a);
 	if (len_a == 3)
 		sort3(a);
-	sort4(*a, len_a, *b, len_b);
+	sort(*a, len_a, *b, len_b);
 	// free(a, b)
 	return (a);
 }
