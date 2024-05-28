@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/25 18:33:49 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/27 14:43:29 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,14 @@ void	exiterror(void)
 	exit(0);
 }
 
+void	exiterror1(int *a, int *b)
+{
+	printf("Error\n");
+	free(a);
+	free(b);
+	exit(0);
+}
+
 void	exitsuccess(int *tab)
 {
 	// free(tab);
@@ -142,7 +150,7 @@ void	sort2(int *a)
 	return ;
 }
 
-int	sort31(int *a)
+void	sort3(int *a)
 {
 	int	max_index;
 
@@ -151,50 +159,86 @@ int	sort31(int *a)
 		max_index = 1;
 	if (a[2] > a[max_index])
 		max_index = 2;
-	return (max_index);
-}
-
-void	sort3(int *a)
-{
-	int	max_index;
-
-	max_index = sort31(a);
 	if (max_index == 0)
 	{
 		rotate(a, 3, 'a');
 		if (a[0] > a[1])
 			swap(a, 3, 'a');
-		exitsuccess(a);
 	}
 	else if (max_index == 1)
 	{
 		reverse_rotate(a, 3, 'a');
 		if (a[0] > a[1])
 			swap(a, 3, 'a');
-		exitsuccess(a);
 	}
 	else if (max_index == 2)
 	{
 		if (a[0] > a[1])
 			swap(a, 3, 'a');
-		exitsuccess(a);
+	}
+	exitsuccess(a);
+}
+
+int	find_target(int num, int *b)
+{
+	// loop checking b to find target of num
+	// return index of b
+}
+
+void	index_assign(int *big, int *small, int *b)
+{
+	if (b[0] > b[1])
+	{
+		big = 0;
+		small = 1;
+	}
+	else
+	{
+		small = 0;
+		big = 1;
 	}
 }
 
-int	*push_swap(int *a, int len)
+void	sort4(int *a, int *len_a, int *b, int *len_b)
+{
+	int	biggest_index;
+	int	smallest_index;
+	int	*targets;
+
+	if (len_a == 4)
+	{
+		push(*a, *len_a, *b, *len_b);
+		write(1, "pb\n", 3);
+	}
+	if (len_a >= 5)
+	{
+		push(*a, *len_a, *b, *len_b);
+		write(1, "pb\n", 3);
+		push(*a, *len_a, *b, *len_b);
+		write(1, "pb\n", 3);
+	}
+	index_assign(biggest_index, smallest_index, *b);
+	targets = (int *)malloc(sizeof(int) * (*len_a));
+	if (!targets)
+		exiterror1(a, b);
+}
+
+int	*push_swap(int *a, int len_a)
 {
 	int	*b;
+	int	len_b;
 
-	b = (int *)malloc(sizeof(int) * len);
+	b = (int *)malloc(sizeof(int) * len_a);
 	if (!b)
 		exiterror();
-	if (check_if_sorted(a, len))
+	len_b = 0;
+	if (check_if_sorted(a, len_a))
 		return (a);
-	if (len == 2)
+	if (len_a == 2)
 		sort2(a);
-	if (len == 3)
+	if (len_a == 3)
 		sort3(a);
-	//sort();
+	sort4(*a, len_a, *b, len_b);
 	// free(a, b)
 	return (a);
 }
