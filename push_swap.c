@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/28 18:28:34 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/28 19:03:30 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,20 +179,6 @@ void	sort3(int *a)
 	exitsuccess(a);
 }
 
-int	find_target(int num, int *b)
-{
-	// loop checking b to find target of num
-	// return index of b
-}
-
-void	index_assign(int *big, int *b)
-{
-	if (b[0] > b[1])
-		big = 0;
-	else
-		big = 1;
-}
-
 int	**create2DArray(int *array1, int length1, int *array2, int length2)
 {
 	int	**array2D;
@@ -223,22 +209,22 @@ int	**create2DArray(int *array1, int length1, int *array2, int length2)
 int	find_big_index(int *arr, int len)
 {
 	int	i;
-	int	maxIndex;
+	int	max_index;
 
 	if (len <= 0)
 		return (-1);
 	i = 1;
-	maxIndex = 0;
+	max_index = 0;
 	while (i < len)
 	{
-		if (arr[i] > arr[maxIndex])
-			maxIndex = i;
+		if (arr[i] > arr[max_index])
+			max_index = i;
 		i++;
 	}
-	return (maxIndex);
+	return (max_index);
 }
 
-void	assign_targets(int *targets, int **lol, int biggest_index)
+void	assign_targets(int *targets, int **lol)
 {
 	int	i;
 	int	j;
@@ -271,9 +257,30 @@ void	assign_targets(int *targets, int **lol, int biggest_index)
 	}
 }
 
+int	find_cheapest(int *targets, int **lol)
+{
+	int	i;
+	int	cheapest_index;
+	int	temp;
+
+	i = 0;
+	while (i < lol[2][0])
+	{
+		temp = 0;
+		temp = targets[i] + i;
+		if (temp == 0)
+			return (temp);
+		// ...
+		// https://youtu.be/wRvipSG4Mmk?t=934
+		// do cost analysis, finding the cheapest element in a to push, and then return that.
+		// if we are pushing both stacks the same direction, check whether number from a or b get on top first
+		// then proceed with operation on one stack
+		i++;
+	}
+}
+
 void	sort(int *a, int *len_a, int *b, int *len_b)
 {
-	int	biggest_index;
 	int	*targets;
 	int	**lol;
 
@@ -289,12 +296,11 @@ void	sort(int *a, int *len_a, int *b, int *len_b)
 		push(*a, *len_a, *b, *len_b);
 		write(1, "pb\n", 3);
 	}
-	index_assign(biggest_index, *b);
 	targets = (int *)malloc(sizeof(int) * (*len_a));
 	if (!targets)
 		exiterror1(a, b);
 	lol = create2DArray(a, len_a, b, len_b);
-	assign_targets(targets, lol, biggest_index);
+	assign_targets(targets, lol);
 }
 
 int	*push_swap(int *a, int len_a)
