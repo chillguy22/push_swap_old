@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/30 18:30:56 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/30 19:50:51 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -373,6 +373,94 @@ void process(int *temp, int *temp1, int **lol)
 	
 }
 
+int cases(int *a, int *b, int **lol)
+{
+	int a_direction = a[0];
+	int b_direction = b[0];
+	int a_index = a[1];
+	int b_index = b[1];
+	int a_len = lol[2][0];
+	int b_len = lol[3][0];
+	int cost = 0;
+	if (a_direction == b_direction && b_direction == 1)
+	{
+		while (a_index != 0 || b_index != 0)
+		{
+			cost++;
+			a_index -= 1;
+			b_index -= 1;
+		}
+		if (a_index != 0)
+		{
+			while (a_index != 0)
+			{
+				cost++;
+				a_index -= 1;
+			}
+		}
+		else if (b_index != 0)
+		{
+			while (b_index != 0)
+			{
+				cost++;
+				b_index -= 1;
+			}
+		}
+	}
+	else if (a[0] == b[0] && a[0] == -1)
+	{
+		while (a_index != a_len + 1 || b_index != b_len + 1)
+		{
+			cost++;
+			a_index += 1;
+			b_index += 1;
+		}
+		if (a_index != a_len + 1)
+		{
+			while (a_index != a_len + 1)
+			{
+				cost++;
+				a_index += 1;
+			}
+		}
+		else if (b_index != b_len + 1)
+		{
+			while (b_index != b_len + 1)
+			{
+				cost++;
+				b_index += 1;
+			}
+		}
+	}
+	else if (a[0] != b[0] && a[0] == 1)
+	{
+		while (b_index != b_len + 1)
+		{
+			cost++;
+			b_index += 1;
+		}
+		while (a_index != 0)
+		{
+			cost++;
+			a_index -= 1;
+		}
+	}
+	else if (a[0] != b[0] && a[0] == -1)
+	{
+		while (a_index != a_len + 1)
+		{
+			cost++;
+			a_index += 1;
+		}
+		while (b_index != 0)
+		{
+			cost++;
+			b_index -= 1;
+		}
+	}
+	return (cost);
+}
+
 int	*find_cheapest(int **lol, int *targets)
 {
 	int	i;
@@ -412,19 +500,15 @@ int	*find_cheapest(int **lol, int *targets)
 	{
 		temp = rotationsToBringElementToTop(lol[0][i], lol[2][0], i);
 		temp1 = rotationsToBringElementToTop(lol[1][targets[i]], lol[3][0], targets[i]);
-		
-		
-		//cost = 
-		// ...
-		// https://youtu.be/wRvipSG4Mmk?t=934
-		// do cost analysis, finding the cheapest element in a to push,
-		//	and then return that.
-		// if we are pushing both stacks the same direction,
-		//	check whether number from a or b get on top first
-		// then proceed with operation on one stack
+		if (cases(temp, temp1, lol) < cost)
+		{
+			cost = cases(temp, temp1, lol);
+			//result
+		}
 		i++;
 	}
 	
+	return (result)
 }
 
 void	sort1(int *a, int *len_a, int *b, int *len_b)
