@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/30 19:50:51 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/30 19:53:40 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -486,7 +486,7 @@ int	*find_cheapest(int **lol, int *targets)
 		free(temp);
 		exiterror();
 	}
-	result = (int *)malloc(sizeof(int) * 6);
+	result = (int *)malloc(sizeof(int) * 4);
 	if (!result)
 	{
 		free2darray(lol, 4);
@@ -503,6 +503,8 @@ int	*find_cheapest(int **lol, int *targets)
 		if (cases(temp, temp1, lol) < cost)
 		{
 			cost = cases(temp, temp1, lol);
+			result[0] = temp[0];
+			result[1] = temp1[0];
 			//result
 		}
 		i++;
