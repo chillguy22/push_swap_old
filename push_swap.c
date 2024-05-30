@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/28 19:03:30 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/30 18:30:56 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,34 @@ void	rotate(int *arr, int length, char x)
 		write(1, "rb\n", 3);
 }
 
+void	rotateboth(int **lol)
+{
+	int	i;
+	int	first_element;
+
+	i = 0;
+	if (lol[2][0] <= 1)
+		return ;
+	first_element = lol[0][0];
+	while (i < lol[2][0] - 1)
+	{
+		lol[0][i] = lol[0][i + 1];
+		i++;
+	}
+	lol[0][lol[2][0] - 1] = first_element;
+	i = 0;
+	if (lol[3][0] <= 1)
+		return ;
+	first_element = lol[1][0];
+	while (i < lol[3][0] - 1)
+	{
+		lol[1][i] = lol[1][i + 1];
+		i++;
+	}
+	lol[1][lol[3][0] - 1] = first_element;
+	write(1, "rr\n", 3);
+}
+
 void	reverse_rotate(int *arr, int length, char c)
 {
 	int	i;
@@ -112,6 +140,20 @@ void	exiterror1(int *a, int *b)
 	free(b);
 	exit(0);
 }
+
+void	free2darray(int **array, int numrows)
+{
+	int	i;
+
+	i = 0;
+	while (i < numrows)
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
+}
+
 
 void	exitsuccess(int *tab)
 {
@@ -181,29 +223,29 @@ void	sort3(int *a)
 
 int	**create2DArray(int *array1, int length1, int *array2, int length2)
 {
-	int	**array2D;
+	int	**array2d;
 	int	i;
 
-	array2D = (int **)malloc(2 * sizeof(int *));
-	array2D[0] = (int *)malloc(length1 * sizeof(int));
-	array2D[1] = (int *)malloc(length2 * sizeof(int));
-	array2D[2] = (int *)malloc(1 * sizeof(int));
-	array2D[3] = (int *)malloc(1 * sizeof(int));
+	array2d = (int **)malloc(2 * sizeof(int *));
+	array2d[0] = (int *)malloc(length1 * sizeof(int));
+	array2d[1] = (int *)malloc(length2 * sizeof(int));
+	array2d[2] = (int *)malloc(1 * sizeof(int));
+	array2d[3] = (int *)malloc(1 * sizeof(int));
 	i = 0;
 	while (i < length1)
 	{
-		array2D[0][i] = array1[i];
+		array2d[0][i] = array1[i];
 		i++;
 	}
 	i = 0;
 	while (i < length2)
 	{
-		array2D[1][i] = array2[i];
+		array2d[1][i] = array2[i];
 		i++;
 	}
-	array2D[2][0] = length1;
-	array2D[3][0] = length2;
-	return (array2D); // remember to free
+	array2d[2][0] = length1;
+	array2d[3][0] = length2;
+	return (array2d); // remember to free
 }
 
 int	find_big_index(int *arr, int len)
@@ -226,17 +268,17 @@ int	find_big_index(int *arr, int len)
 
 void	assign_targets(int *targets, int **lol)
 {
-	int	i;
-	int	j;
-	int	temp;
-	int	diff;
-	int	difftemp;
+	long	i;
+	long	j;
+	long	temp;
+	long	diff;
+	long	difftemp;
 
 	i = 0;
 	while (i < lol[2][0])
 	{
 		j = 0;
-		diff = INT_MAX;
+		diff = LONG_MAX;
 		while (j < lol[3][0])
 		{
 			if ((lol[0][i] > lol[1][j]))
@@ -250,57 +292,172 @@ void	assign_targets(int *targets, int **lol)
 			}
 			j++;
 		}
-		if (diff == INT_MAX)
-			j = find_big_index(lol[1], lol[3][0]);
-		targets[i] = j;
+		if (diff == LONG_MAX)
+			temp = find_big_index(lol[1], lol[3][0]);
+		targets[i] = temp;
 		i++;
 	}
 }
 
-int	find_cheapest(int *targets, int **lol)
+int* rotationsToBringElementToTop(int* arr, int len, int target) {
+    int targetIndex = -1;
+
+    // Find the index of the target element
+    for (int i = 0; i < len; i++) {
+        if (arr[i] == target) {
+            targetIndex = i;
+            break;
+        }
+    }
+
+    // Allocate memory for the result
+    int* result = (int**)malloc(1 * sizeof(int*));
+
+    // If the target element is not found, return -1
+    if (targetIndex == -1) {
+        result[0] = -1;
+        result[1] = -1;
+        return result;
+    }
+
+    // Calculate the number of upward rotations
+    int upwardRotations = targetIndex;
+
+    // Calculate the number of downward rotations
+    int downwardRotations = len - targetIndex;
+
+    // Determine the minimum rotations and the direction
+    if (upwardRotations <= downwardRotations) {
+        result[0] = 1;  // Upwards
+        result[1] = upwardRotations;
+    } else {
+        result[0] = -1; // Downwards
+        result[1] = downwardRotations;
+    }
+
+    return result;
+}
+
+void process(int *temp, int *temp1, int **lol)
+{
+	if (temp[0] == temp1[0] && temp[0] == 1)
+	{
+		while (temp[1] != 0 || temp1[1] != 0)
+		{
+			rotateboth(lol);
+			temp -= 1;
+			temp1 -= 1;
+		}
+		if (temp != 0)
+		{
+			while (temp != 0)
+		}
+		if (temp1 != 0)
+		{
+			while (temp1 != 0)
+		}
+
+	}
+	if (temp[0] == temp1[0] && temp[0] == -1)
+	{
+		while
+	}
+	if (temp[0] != temp1[0] && temp[0] == 1)
+	{
+		while
+	}
+	if (temp[0] != temp1[0] && temp[0] == -1)
+	{
+		while
+	}
+	
+}
+
+int	*find_cheapest(int **lol, int *targets)
 {
 	int	i;
 	int	cheapest_index;
-	int	temp;
+	int	cost;
+	int	*result;
+	int	*temp;
+	int	*temp1;
 
+	cost = INT_MAX;
+	temp = (int *)malloc(sizeof(int) * 2);
+	if (!temp)
+	{
+		free2darray(lol, 4);
+		free(targets);
+		exiterror();
+	}
+	temp1 = (int *)malloc(sizeof(int) * 2);
+	if (!temp1)
+	{
+		free2darray(lol, 4);
+		free(targets);
+		free(temp);
+		exiterror();
+	}
+	result = (int *)malloc(sizeof(int) * 6);
+	if (!result)
+	{
+		free2darray(lol, 4);
+		free(targets);
+		free(temp);
+		free(temp1);
+		exiterror();
+	}
 	i = 0;
 	while (i < lol[2][0])
 	{
-		temp = 0;
-		temp = targets[i] + i;
-		if (temp == 0)
-			return (temp);
+		temp = rotationsToBringElementToTop(lol[0][i], lol[2][0], i);
+		temp1 = rotationsToBringElementToTop(lol[1][targets[i]], lol[3][0], targets[i]);
+		
+		
+		//cost = 
 		// ...
 		// https://youtu.be/wRvipSG4Mmk?t=934
-		// do cost analysis, finding the cheapest element in a to push, and then return that.
-		// if we are pushing both stacks the same direction, check whether number from a or b get on top first
+		// do cost analysis, finding the cheapest element in a to push,
+		//	and then return that.
+		// if we are pushing both stacks the same direction,
+		//	check whether number from a or b get on top first
 		// then proceed with operation on one stack
 		i++;
 	}
+	
 }
 
-void	sort(int *a, int *len_a, int *b, int *len_b)
+void	sort1(int *a, int *len_a, int *b, int *len_b)
 {
 	int	*targets;
 	int	**lol;
+	int	**result;
+	int	i;
 
-	if (len_a == 4)
+	if (len_a >= 4)
 	{
 		push(*a, *len_a, *b, *len_b);
 		write(1, "pb\n", 3);
+		if (len_a >= 4)
+		{
+			push(*a, *len_a, *b, *len_b);
+			write(1, "pb\n", 3);
+		}
 	}
-	if (len_a >= 5)
+	if (len_a != 3)
 	{
-		push(*a, *len_a, *b, *len_b);
-		write(1, "pb\n", 3);
-		push(*a, *len_a, *b, *len_b);
-		write(1, "pb\n", 3);
+		targets = (int *)malloc(sizeof(int) * (*len_a));
+		if (!targets)
+			exiterror1(a, b);
+		lol = create2DArray(a, len_a, b, len_b);
+		assign_targets(targets, lol);
+		i = 0;
+		while (lol[2][0] != 3)
+		{
+			result = find_cheapest(lol, targets[i]);
+			process(temp, temp1, lol);
+		}
 	}
-	targets = (int *)malloc(sizeof(int) * (*len_a));
-	if (!targets)
-		exiterror1(a, b);
-	lol = create2DArray(a, len_a, b, len_b);
-	assign_targets(targets, lol);
 }
 
 int	*push_swap(int *a, int len_a)
