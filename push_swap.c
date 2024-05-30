@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/30 19:53:40 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/30 21:07:38 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,35 @@ void	reverse_rotate(int *arr, int length, char c)
 		write(1, "rra\n", 4);
 	else if (c == 'b')
 		write(1, "rrb\n", 4);
+}
+
+void	reverse_rotateboth(int **lol)
+{
+	int	i;
+	int	last_element;
+
+	if (lol[2][0] <= 1)
+		return ;
+	i = lol[2][0] - 1;
+	last_element = lol[0][lol[2][0] - 1];
+	while (i > 0)
+	{
+		lol[0][i] = lol[0][i - 1];
+		i--;
+	}
+	lol[0][0] = last_element;
+
+	if (lol[3][0] <= 1)
+		return ;
+	i = lol[3][0] - 1;
+	last_element = lol[1][lol[3][0] - 1];
+	while (i > 0)
+	{
+		lol[1][i] = lol[1][i - 1];
+		i--;
+	}
+	lol[1][0] = last_element;
+	write(1, "rrr\n", 4);
 }
 
 void	exiterror(void)
@@ -345,28 +374,56 @@ void process(int *temp, int *temp1, int **lol)
 		while (temp[1] != 0 || temp1[1] != 0)
 		{
 			rotateboth(lol);
-			temp -= 1;
-			temp1 -= 1;
+			temp[1] -= 1;
+			temp1[1] -= 1;
 		}
-		if (temp != 0)
+		if (temp[1] != 0)
 		{
-			while (temp != 0)
+			while (temp[1] != 0)
+			{
+				rotate(lol[0], lol[2][0], 'a');
+				temp[1]--;
+			}
 		}
-		if (temp1 != 0)
+		else if (temp1[1] != 0)
 		{
-			while (temp1 != 0)
+			while (temp1[1] != 0)
+			{
+				rotate(lol[1], lol[3][0], 'b');
+				temp1[1]--;
+			}
 		}
-
 	}
-	if (temp[0] == temp1[0] && temp[0] == -1)
+	else if (temp[0] == temp1[0] && temp[0] == -1)
+	{
+		while (temp[1] != lol[2][0] + 1 || temp1[1] != lol[3][0] + 1)
+		{
+			reverse_rotateboth(lol);
+			temp[1] += 1;
+			temp1[1] += 1;
+		}
+		if (temp[1] != lol[2][0] + 1) // here
+		{
+			while (temp[1] != lol[2][0] + 1)
+			{
+				rotate(lol[0], lol[2][0], 'a');
+				temp[1]--;
+			}
+		}
+		else if (temp1[1] != 0)
+		{
+			while (temp1[1] != 0)
+			{
+				rotate(lol[1], lol[3][0], 'b');
+				temp1[1]--;
+			}
+		}
+	}
+	else if (temp[0] != temp1[0] && temp[0] == 1)
 	{
 		while
 	}
-	if (temp[0] != temp1[0] && temp[0] == 1)
-	{
-		while
-	}
-	if (temp[0] != temp1[0] && temp[0] == -1)
+	else if (temp[0] != temp1[0] && temp[0] == -1)
 	{
 		while
 	}
