@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/31 12:18:02 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/31 12:18:47 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -571,8 +571,7 @@ int	*find_cheapest(int **lol, int *targets)
 		}
 		i++;
 	}
-	
-	return (result)
+	return (result);
 }
 
 void	sort1(int *a, int *len_a, int *b, int *len_b)
