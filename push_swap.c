@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/31 16:39:32 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/31 18:34:30 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -340,7 +340,7 @@ int* rotationsToBringElementToTop(int* arr, int len, int target) {
     }
 
     // Allocate memory for the result
-    int* result = (int**)malloc(1 * sizeof(int*));
+    int* result = (int*)malloc(1 * sizeof(int*));
 
     // If the target element is not found, return -1
     if (targetIndex == -1) {
@@ -560,8 +560,8 @@ int	*find_cheapest(int **lol, int *targets)
 	i = 0;
 	while (i < lol[2][0])
 	{
-		temp = rotationsToBringElementToTop(lol[0][i], lol[2][0], i);
-		temp1 = rotationsToBringElementToTop(lol[1][targets[i]], lol[3][0], targets[i]);
+		temp = rotationsToBringElementToTop(lol[0], lol[2][0], i);
+		temp1 = rotationsToBringElementToTop(lol[1], lol[3][0], targets[i]);
 		if (cases(temp, temp1, lol) < cost)
 		{
 			cost = cases(temp, temp1, lol);
@@ -579,30 +579,30 @@ void	sort1(int *a, int *len_a, int *b, int *len_b)
 {
 	int	*targets;
 	int	**lol;
-	int	**result;
+	int	*result;
 	int	i;
 
-	if (len_a >= 4)
+	if (*len_a >= 4)
 	{
-		push(*a, *len_a, *b, *len_b);
+		push(a, len_a, b, len_b);
 		write(1, "pb\n", 3);
-		if (len_a >= 4)
+		if (*len_a >= 4)
 		{
-			push(*a, *len_a, *b, *len_b);
+			push(a, len_a, b, len_b);
 			write(1, "pb\n", 3);
 		}
 	}
-	if (len_a != 3)
+	if (*len_a != 3)
 	{
 		targets = (int *)malloc(sizeof(int) * (*len_a));
 		if (!targets)
 			exiterror1(a, b);
-		lol = create2DArray(a, len_a, b, len_b);
+		lol = create2DArray(a, *len_a, b, *len_b);
 		assign_targets(targets, lol);
 		i = 0;
 		while (lol[2][0] != 3)
 		{
-			result = find_cheapest(lol, targets[i]);
+			result = find_cheapest(lol, targets);
 			process(result, lol);
 		}
 	}
@@ -623,7 +623,7 @@ int	*push_swap(int *a, int len_a)
 		sort2(a);
 	if (len_a == 3)
 		sort3(a);
-	sort(*a, len_a, *b, len_b);
+	sort1(a, &len_a, b, &len_b);
 	// free(a, b)
 	return (a);
 }
