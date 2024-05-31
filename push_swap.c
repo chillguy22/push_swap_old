@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/30 21:07:38 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/31 12:18:02 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -377,21 +377,15 @@ void process(int *temp, int *temp1, int **lol)
 			temp[1] -= 1;
 			temp1[1] -= 1;
 		}
-		if (temp[1] != 0)
+		while (temp[1] != 0)
 		{
-			while (temp[1] != 0)
-			{
-				rotate(lol[0], lol[2][0], 'a');
-				temp[1]--;
-			}
+			rotate(lol[0], lol[2][0], 'a');
+			temp[1]--;
 		}
-		else if (temp1[1] != 0)
+		while (temp1[1] != 0)
 		{
-			while (temp1[1] != 0)
-			{
-				rotate(lol[1], lol[3][0], 'b');
-				temp1[1]--;
-			}
+			rotate(lol[1], lol[3][0], 'b');
+			temp1[1]--;
 		}
 	}
 	else if (temp[0] == temp1[0] && temp[0] == -1)
@@ -402,32 +396,43 @@ void process(int *temp, int *temp1, int **lol)
 			temp[1] += 1;
 			temp1[1] += 1;
 		}
-		if (temp[1] != lol[2][0] + 1) // here
+		while ((temp[1] != lol[2][0] + 1) && (temp[1] < lol[2][0] + 1))
 		{
-			while (temp[1] != lol[2][0] + 1)
-			{
-				rotate(lol[0], lol[2][0], 'a');
-				temp[1]--;
-			}
+			reverse_rotate(lol[0], lol[2][0], 'a');
+			temp[1]++;
 		}
-		else if (temp1[1] != 0)
+		while ((temp1[1] != lol[3][0] + 1) && (temp1[1] < lol[3][0] + 1))
 		{
-			while (temp1[1] != 0)
-			{
-				rotate(lol[1], lol[3][0], 'b');
-				temp1[1]--;
-			}
+			reverse_rotate(lol[1], lol[3][0], 'b');
+			temp1[1]++;
 		}
 	}
 	else if (temp[0] != temp1[0] && temp[0] == 1)
 	{
-		while
+		while ((temp[1] != 0) && (temp[1] > 0))
+		{
+			rotate(lol[0], lol[2][0], 'a');
+			temp[1]--;
+		}
+		while ((temp1[1] != lol[3][0] + 1) && (temp1[1] < lol[3][0]))
+		{
+			reverse_rotate(lol[1], lol[3][0], 'b');
+			temp1[1]++;
+		}
 	}
 	else if (temp[0] != temp1[0] && temp[0] == -1)
 	{
-		while
+		while ((temp[1] != lol[2][0] + 1) && (temp[1] < lol[2][0]))
+		{
+			reverse_rotate(lol[0], lol[2][0], 'a');
+			temp[1]++;
+		}
+		while ((temp1[1] != 0) && (temp1[1] > 0))
+		{
+			rotate(lol[1], lol[3][0], 'b');
+			temp1[1]--;
+		}
 	}
-	
 }
 
 int cases(int *a, int *b, int **lol)
