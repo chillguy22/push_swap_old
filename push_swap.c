@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/31 18:58:34 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/31 18:59:30 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -621,7 +621,7 @@ int	*push_swap(int *a, int len_a)
 		sort3(a, b);
 	else
 		sort1(a, &len_a, b, &len_b);
-	// free(a, b)
+	// free a in main
 	free(b);
 	return (a);
 }
