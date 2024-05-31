@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/31 12:18:47 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/31 16:39:32 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -367,70 +367,70 @@ int* rotationsToBringElementToTop(int* arr, int len, int target) {
     return result;
 }
 
-void process(int *temp, int *temp1, int **lol)
+void process(int *result, int **lol)
 {
-	if (temp[0] == temp1[0] && temp[0] == 1)
+	if (result[0] == result[2] && result[0] == 1)
 	{
-		while (temp[1] != 0 || temp1[1] != 0)
+		while (result[1] != 0 || result[3] != 0)
 		{
 			rotateboth(lol);
-			temp[1] -= 1;
-			temp1[1] -= 1;
+			result[1] -= 1;
+			result[3] -= 1;
 		}
-		while (temp[1] != 0)
+		while (result[1] != 0)
 		{
 			rotate(lol[0], lol[2][0], 'a');
-			temp[1]--;
+			result[1]--;
 		}
-		while (temp1[1] != 0)
+		while (result[3] != 0)
 		{
 			rotate(lol[1], lol[3][0], 'b');
-			temp1[1]--;
+			result[3]--;
 		}
 	}
-	else if (temp[0] == temp1[0] && temp[0] == -1)
+	else if (result[0] == result[2] && result[0] == -1)
 	{
-		while (temp[1] != lol[2][0] + 1 || temp1[1] != lol[3][0] + 1)
+		while (result[1] != lol[2][0] + 1 || result[3] != lol[3][0] + 1)
 		{
 			reverse_rotateboth(lol);
-			temp[1] += 1;
-			temp1[1] += 1;
+			result[1] += 1;
+			result[3] += 1;
 		}
-		while ((temp[1] != lol[2][0] + 1) && (temp[1] < lol[2][0] + 1))
+		while ((result[1] != lol[2][0] + 1) && (result[1] < lol[2][0] + 1))
 		{
 			reverse_rotate(lol[0], lol[2][0], 'a');
-			temp[1]++;
+			result[1]++;
 		}
-		while ((temp1[1] != lol[3][0] + 1) && (temp1[1] < lol[3][0] + 1))
+		while ((result[3] != lol[3][0] + 1) && (result[3] < lol[3][0] + 1))
 		{
 			reverse_rotate(lol[1], lol[3][0], 'b');
-			temp1[1]++;
+			result[3]++;
 		}
 	}
-	else if (temp[0] != temp1[0] && temp[0] == 1)
+	else if (result[0] != result[2] && result[0] == 1)
 	{
-		while ((temp[1] != 0) && (temp[1] > 0))
+		while ((result[1] != 0) && (result[1] > 0))
 		{
 			rotate(lol[0], lol[2][0], 'a');
-			temp[1]--;
+			result[1]--;
 		}
-		while ((temp1[1] != lol[3][0] + 1) && (temp1[1] < lol[3][0]))
+		while ((result[3] != lol[3][0] + 1) && (result[3] < lol[3][0]))
 		{
 			reverse_rotate(lol[1], lol[3][0], 'b');
-			temp1[1]++;
+			result[3]++;
 		}
 	}
-	else if (temp[0] != temp1[0] && temp[0] == -1)
+	else if (result[0] != result[2] && result[0] == -1)
 	{
-		while ((temp[1] != lol[2][0] + 1) && (temp[1] < lol[2][0]))
+		while ((result[1] != lol[2][0] + 1) && (result[1] < lol[2][0]))
 		{
 			reverse_rotate(lol[0], lol[2][0], 'a');
-			temp[1]++;
+			result[1]++;
 		}
-		while ((temp1[1] != 0) && (temp1[1] > 0))
+		while ((result[3] != 0) && (result[3] > 0))
 		{
 			rotate(lol[1], lol[3][0], 'b');
-			temp1[1]--;
+			result[3]--;
 		}
 	}
 }
@@ -566,8 +566,9 @@ int	*find_cheapest(int **lol, int *targets)
 		{
 			cost = cases(temp, temp1, lol);
 			result[0] = temp[0];
-			result[1] = temp1[0];
-			//result
+			result[2] = temp1[0];
+			result[1] = i;
+			result[3] = targets[i];
 		}
 		i++;
 	}
@@ -602,7 +603,7 @@ void	sort1(int *a, int *len_a, int *b, int *len_b)
 		while (lol[2][0] != 3)
 		{
 			result = find_cheapest(lol, targets[i]);
-			process(temp, temp1, lol);
+			process(result, lol);
 		}
 	}
 }
