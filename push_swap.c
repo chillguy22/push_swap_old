@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/31 18:34:30 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/31 18:54:22 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,9 +184,8 @@ void	free2darray(int **array, int numrows)
 }
 
 
-void	exitsuccess(int *tab)
+void	exitsuccess(int *tab, int *tab1)
 {
-	// free(tab);
 	return ;
 	exit(0);
 }
@@ -207,21 +206,16 @@ int	check_if_sorted(int *tab, int len)
 	return (1);
 }
 
-void	sort2(int *a)
+void	sort2(int *a, int *b)
 {
 	int	temp;
 
 	if (a[0] > a[1])
-	{
 		write(1, "ra\n", 3);
-		exitsuccess(a);
-	}
-	else
-		exitsuccess(a);
 	return ;
 }
 
-void	sort3(int *a)
+void	sort3(int *a, int *b)
 {
 	int	max_index;
 
@@ -247,7 +241,6 @@ void	sort3(int *a)
 		if (a[0] > a[1])
 			swap(a, 3, 'a');
 	}
-	exitsuccess(a);
 }
 
 int	**create2DArray(int *array1, int length1, int *array2, int length2)
@@ -619,12 +612,14 @@ int	*push_swap(int *a, int len_a)
 	len_b = 0;
 	if (check_if_sorted(a, len_a))
 		return (a);
-	if (len_a == 2)
-		sort2(a);
-	if (len_a == 3)
-		sort3(a);
-	sort1(a, &len_a, b, &len_b);
+	else if (len_a == 2)
+		sort2(a, b);
+	else if (len_a == 3)
+		sort3(a, b);
+	else
+		sort1(a, &len_a, b, &len_b);
 	// free(a, b)
+	free(b);
 	return (a);
 }
 // Main function to test the push_swap function
