@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/31 18:54:22 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/05/31 18:58:34 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -611,8 +611,11 @@ int	*push_swap(int *a, int len_a)
 		exiterror();
 	len_b = 0;
 	if (check_if_sorted(a, len_a))
+	{
+		free(b);
 		return (a);
-	else if (len_a == 2)
+	}
+	if (len_a == 2)
 		sort2(a, b);
 	else if (len_a == 3)
 		sort3(a, b);
