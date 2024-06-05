@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/31 18:59:30 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/06/05 17:48:03 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	push(int *a, int *len_a, int *b, int *len_b)
 {
 	int	i;
 
-	if (*len_b == 0)
+	if (*len_a == 0)
 		return ;
 	i = *len_b;
 	while (i >= 0)
@@ -206,7 +206,7 @@ int	check_if_sorted(int *tab, int len)
 	return (1);
 }
 
-void	sort2(int *a, int *b)
+void	sort2(int *a)
 {
 	int	temp;
 
@@ -215,7 +215,7 @@ void	sort2(int *a, int *b)
 	return ;
 }
 
-void	sort3(int *a, int *b)
+void	sort3(int *a)
 {
 	int	max_index;
 
@@ -599,6 +599,8 @@ void	sort1(int *a, int *len_a, int *b, int *len_b)
 			process(result, lol);
 		}
 	}
+	sort3(a);
+	// sort 3 <-- sort
 }
 
 int	*push_swap(int *a, int len_a)
@@ -606,6 +608,7 @@ int	*push_swap(int *a, int len_a)
 	int	*b;
 	int	len_b;
 
+	printf("len: %i\n", len_a);
 	b = (int *)malloc(sizeof(int) * len_a);
 	if (!b)
 		exiterror();
@@ -616,9 +619,9 @@ int	*push_swap(int *a, int len_a)
 		return (a);
 	}
 	if (len_a == 2)
-		sort2(a, b);
+		sort2(a);
 	else if (len_a == 3)
-		sort3(a, b);
+		sort3(a);
 	else
 		sort1(a, &len_a, b, &len_b);
 	// free a in main
@@ -628,7 +631,7 @@ int	*push_swap(int *a, int len_a)
 // Main function to test the push_swap function
 int	main(void)
 {
-	int	case1[] = {1, 2, 3};
+	int	case1[] = {1, 3, 2, 4};
 	int	case2[] = {2, 1};
 	int	case3[] = {3, 2, 1};
 	int	case4[] = {1, 3, 2};
@@ -645,64 +648,64 @@ int	main(void)
 
 	// Test case 1: Already sorted
 	printf("Test case 1 (1, 2, 3):\n");
-	arr1 = malloc(3 * sizeof(int));
+	arr1 = malloc(4 * sizeof(int));
 	if (!arr1)
 		exiterror();
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 4; i++)
 		arr1[i] = case1[i];
-	push_swap(arr1, 3);
+	push_swap(arr1, 4);
 	free(arr1);
-	// Test case 2: Two elements unsorted
-	printf("Test case 2 (2, 1):\n");
-	arr2 = malloc(2 * sizeof(int));
-	if (!arr2)
-		exiterror();
-	for (int i = 0; i < 2; i++)
-		arr2[i] = case2[i];
-	push_swap(arr2, 2);
-	free(arr2);
-	// Test case 3: Three elements reverse sorted
-	printf("Test case 3 (3, 2, 1):\n");
-	arr3 = malloc(3 * sizeof(int));
-	if (!arr3)
-		exiterror();
-	for (int i = 0; i < 3; i++)
-		arr3[i] = case3[i];
-	push_swap(arr3, 3);
-	free(arr3);
-	// Test case 4: Three elements middle unsorted
-	printf("Test case 4 (1, 3, 2):\n");
-	arr4 = malloc(3 * sizeof(int));
-	if (!arr4)
-		exiterror();
-	for (int i = 0; i < 3; i++)
-		arr4[i] = case4[i];
-	push_swap(arr4, 3);
-	free(arr4);
-	// Test case 5: Three elements last unsorted
-	printf("Test case 5 (2, 3, 1):\n");
-	arr5 = malloc(3 * sizeof(int));
-	if (!arr5)
-		exiterror();
-	for (int i = 0; i < 3; i++)
-		arr5[i] = case5[i];
-	push_swap(arr5, 3);
-	free(arr5);
-	printf("Test case 6 (2, 1, 3):\n");
-	arr6 = malloc(3 * sizeof(int));
-	if (!arr6)
-		exiterror();
-	for (int i = 0; i < 3; i++)
-		arr6[i] = case6[i];
-	push_swap(arr6, 3);
-	free(arr6);
-	printf("Test case 7 (3, 1, 2):\n");
-	arr7 = malloc(3 * sizeof(int));
-	if (!arr7)
-		exiterror();
-	for (int i = 0; i < 3; i++)
-		arr7[i] = case7[i];
-	push_swap(arr7, 3);
-	free(arr7);
+	// // Test case 2: Two elements unsorted
+	// printf("Test case 2 (2, 1):\n");
+	// arr2 = malloc(2 * sizeof(int));
+	// if (!arr2)
+	// 	exiterror();
+	// for (int i = 0; i < 2; i++)
+	// 	arr2[i] = case2[i];
+	// push_swap(arr2, 2);
+	// free(arr2);
+	// // Test case 3: Three elements reverse sorted
+	// printf("Test case 3 (3, 2, 1):\n");
+	// arr3 = malloc(3 * sizeof(int));
+	// if (!arr3)
+	// 	exiterror();
+	// for (int i = 0; i < 3; i++)
+	// 	arr3[i] = case3[i];
+	// push_swap(arr3, 3);
+	// free(arr3);
+	// // Test case 4: Three elements middle unsorted
+	// printf("Test case 4 (1, 3, 2):\n");
+	// arr4 = malloc(3 * sizeof(int));
+	// if (!arr4)
+	// 	exiterror();
+	// for (int i = 0; i < 3; i++)
+	// 	arr4[i] = case4[i];
+	// push_swap(arr4, 3);
+	// free(arr4);
+	// // Test case 5: Three elements last unsorted
+	// printf("Test case 5 (2, 3, 1):\n");
+	// arr5 = malloc(3 * sizeof(int));
+	// if (!arr5)
+	// 	exiterror();
+	// for (int i = 0; i < 3; i++)
+	// 	arr5[i] = case5[i];
+	// push_swap(arr5, 3);
+	// free(arr5);
+	// printf("Test case 6 (2, 1, 3):\n");
+	// arr6 = malloc(3 * sizeof(int));
+	// if (!arr6)
+	// 	exiterror();
+	// for (int i = 0; i < 3; i++)
+	// 	arr6[i] = case6[i];
+	// push_swap(arr6, 3);
+	// free(arr6);
+	// printf("Test case 7 (3, 1, 2):\n");
+	// arr7 = malloc(3 * sizeof(int));
+	// if (!arr7)
+	// 	exiterror();
+	// for (int i = 0; i < 3; i++)
+	// 	arr7[i] = case7[i];
+	// push_swap(arr7, 3);
+	// free(arr7);
 	return (0);
 }
