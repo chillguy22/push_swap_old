@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   push_swap.c                                        :+:      :+:    :+:   */
+/*   push_swaptest.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/06/06 21:49:33 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/06/06 18:40:15 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,25 +33,28 @@ void	swap(int *array, int length, char c)
 		write(1, "sb\n", 3);
 }
 
-void push(int *a, int *len_a, int *b, int *len_b) {
-    int i;
+void	push(int *a, int *len_a, int *b, int *len_b)
+{
+	int	i;
 
-    if (*len_a == 0)
-        return;
-
-    // Shift elements in b to the right to make space for the new element
-    for (i = *len_b; i > 0; i--) {
-        b[i] = b[i - 1];
-    }
-    b[0] = a[0];  // Move the first element of a to the first position of b
-
-    (*len_b)++;  // Increment the length of b
-    (*len_a)--;  // Decrement the length of a
-
-    // Shift elements in a to the left to fill the gap
-    for (i = 0; i < *len_a; i++) {
-        a[i] = a[i + 1];
-    }
+	if (*len_a == 0)
+		return ;
+	i = *len_b;
+	while (i >= 0)
+	{
+		b[i + 1] = b[i];
+		i--;
+	}
+	b[0] = a[0];
+	(*len_b)++;
+	(*len_a)--;
+	i = 0;
+	while (i < *len_a)
+	{
+		a[i] = a[i + 1];
+		i++;
+	}
+	return ;
 }
 
 void	rotate(int *arr, int length, char x)
@@ -75,31 +78,31 @@ void	rotate(int *arr, int length, char x)
 		write(1, "rb\n", 3);
 }
 
-void	rotateboth(int *a, int *b, int len_a, int len_b)
+void	rotateboth(int **lol)
 {
 	int	i;
 	int	first_element;
 
 	i = 0;
-	if (len_a <= 1)
+	if (lol[2][0] <= 1)
 		return ;
-	first_element = a[0];
-	while (i < len_a - 1)
+	first_element = lol[0][0];
+	while (i < lol[2][0] - 1)
 	{
-		a[i] = a[i + 1];
+		lol[0][i] = lol[0][i + 1];
 		i++;
 	}
-	a[len_a - 1] = first_element;
+	lol[0][lol[2][0] - 1] = first_element;
 	i = 0;
-	if (len_b <= 1)
+	if (lol[3][0] <= 1)
 		return ;
-	first_element = b[0];
-	while (i < len_b - 1)
+	first_element = lol[1][0];
+	while (i < lol[3][0] - 1)
 	{
-		b[i] = b[i + 1];
+		lol[1][i] = lol[1][i + 1];
 		i++;
 	}
-	b[len_b - 1] = first_element;
+	lol[1][lol[3][0] - 1] = first_element;
 	write(1, "rr\n", 3);
 }
 
@@ -124,32 +127,32 @@ void	reverse_rotate(int *arr, int length, char c)
 		write(1, "rrb\n", 4);
 }
 
-void	reverse_rotateboth(int *a, int *b, int len_a, int len_b)
+void	reverse_rotateboth(int **lol)
 {
 	int	i;
 	int	last_element;
 
-	if (len_a <= 1)
+	if (lol[2][0] <= 1)
 		return ;
-	i = len_a - 1;
-	last_element = a[len_a - 1];
+	i = lol[2][0] - 1;
+	last_element = lol[0][lol[2][0] - 1];
 	while (i > 0)
 	{
-		a[i] = a[i - 1];
+		lol[0][i] = lol[0][i - 1];
 		i--;
 	}
-	a[0] = last_element;
+	lol[0][0] = last_element;
 
-	if (len_b <= 1)
+	if (lol[3][0] <= 1)
 		return ;
-	i = len_b - 1;
-	last_element = b[len_b - 1];
+	i = lol[3][0] - 1;
+	last_element = lol[1][lol[3][0] - 1];
 	while (i > 0)
 	{
-		b[i] = b[i - 1];
+		lol[1][i] = lol[1][i - 1];
 		i--;
 	}
-	b[0] = last_element;
+	lol[1][0] = last_element;
 	write(1, "rrr\n", 4);
 }
 
@@ -302,7 +305,7 @@ int find_smallest_index(int *arr, int len)
     return (min_index);
 }
 
-void	assign_targets(int *targets, int *a, int *b, int *lengths)
+void	assign_targets(int *targets, int **lol)
 {
 	long	i;
 	long	j;
@@ -311,15 +314,15 @@ void	assign_targets(int *targets, int *a, int *b, int *lengths)
 	long	difftemp;
 
 	i = 0;
-	while (i < lengths[0])
+	while (i < lol[2][0])
 	{
 		j = 0;
 		diff = LONG_MAX;
-		while (j < lengths[1])
+		while (j < lol[3][0])
 		{
-			if ((a[i] > b[j]))
+			if ((lol[0][i] > lol[1][j]))
 			{
-				difftemp = a[i] - b[j];
+				difftemp = lol[0][i] - lol[1][j];
 				if (difftemp < diff)
 				{
 					diff = difftemp;
@@ -329,73 +332,88 @@ void	assign_targets(int *targets, int *a, int *b, int *lengths)
 			j++;
 		}
 		if (diff == LONG_MAX)
-			temp = find_big_index(b, lengths[1]);
+			temp = find_big_index(lol[1], lol[3][0]);
 		targets[i] = temp;
 		i++;
 	}
 }
 
-int* rotations_to_bring_to_top(int i, int len) {
-    // Allocate memory for the result array
-    int* result = (int*)malloc(2 * sizeof(int));
-    if (result == NULL) {
-        perror("Failed to allocate memory for result array");
-        exit(EXIT_FAILURE);
+int* rotationsToBringElementToTop(int* arr, int len, int target) {
+    int targetIndex = -1;
+
+    // Find the index of the target element
+    for (int i = 0; i < len; i++) {
+        if (arr[i] == target) {
+            targetIndex = i;
+            break;
+        }
     }
 
-    // Calculate rotations needed for both directions
-    int rotations_up = i;  // Rotations needed to bring i to the top by rotating upwards
-    int rotations_down = len - i;  // Rotations needed to bring i to the top by rotating downwards
+    // Allocate memory for the result
+    int* result = (int*)malloc(1 * sizeof(int*));
 
-    // Determine the faster direction
-    if (rotations_up <= rotations_down) {
-        result[0] = 1;  // 1 for upwards
-        result[1] = rotations_up;
+    // If the target element is not found, return -1
+    if (targetIndex == -1) {
+        result[0] = -1;
+        result[1] = -1;
+        return result;
+    }
+
+    // Calculate the number of upward rotations
+    int upwardRotations = targetIndex;
+
+    // Calculate the number of downward rotations
+    int downwardRotations = len - targetIndex;
+
+    // Determine the minimum rotations and the direction
+    if (upwardRotations <= downwardRotations) {
+        result[0] = 1;  // Upwards
+        result[1] = upwardRotations;
     } else {
-        result[0] = -1;  // -1 for downwards
-        result[1] = rotations_down;
+        result[0] = -1; // Downwards
+        result[1] = downwardRotations;
     }
 
     return result;
 }
 
-void process(int *result, int *a, int *b, int *lengths)
+void process(int *result, int **lol)
 {
 	if (result[0] == result[2] && result[0] == 1)
 	{
-		while (result[1] != 0 && result[3] != 0)
+		while (result[1] != 0 || result[3] != 0)
 		{
-			rotateboth(a, b, lengths[0], lengths[1]);
+			rotateboth(lol);
 			result[1] -= 1;
 			result[3] -= 1;
 		}
 		while (result[1] != 0)
 		{
-			rotate(a, lengths[0], 'a');
+			rotate(lol[0], lol[2][0], 'a');
 			result[1]--;
 		}
 		while (result[3] != 0)
 		{
-			rotate(b, lengths[1], 'b');
+			rotate(lol[1], lol[3][0], 'b');
 			result[3]--;
 		}
 	}
 	else if (result[0] == result[2] && result[0] == -1)
 	{
-		while (result[1] != lengths[0] + 1 && result[3] != lengths[1] + 1)
+		while (result[1] != lol[2][0] + 1 || result[3] != lol[3][0] + 1)
 		{
-			reverse_rotateboth(a, b, lengths[0], lengths[1]);
+			reverse_rotateboth(lol);
 			result[1] += 1;
 			result[3] += 1;
 		}
-		while ((result[1] != lengths[0] + 1) && (result[1] < lengths[0] + 1))
+		while ((result[1] != lol[2][0] + 1) && (result[1] < lol[2][0] + 1))
 		{
-			reverse_rotate(a, lengths[0], 'a');
+			reverse_rotate(lol[0], lol[2][0], 'a');
 			result[1]++;
 		}
-		while ((result[3] != lengths[1] + 1) && (result[3] < lengths[1] + 1))
+		while ((result[3] != lol[3][0] + 1) && (result[3] < lol[3][0] + 1))
 		{
-			reverse_rotate(b, lengths[1], 'b');
+			reverse_rotate(lol[1], lol[3][0], 'b');
 			result[3]++;
 		}
 	}
@@ -403,46 +421,42 @@ void process(int *result, int *a, int *b, int *lengths)
 	{
 		while ((result[1] != 0) && (result[1] > 0))
 		{
-			rotate(a, lengths[0], 'a');
+			rotate(lol[0], lol[2][0], 'a');
 			result[1]--;
 		}
-		while ((result[3] != lengths[1] + 1) && (result[3] < lengths[1]))
+		while ((result[3] != lol[3][0] + 1) && (result[3] < lol[3][0]))
 		{
-			reverse_rotate(b, lengths[1], 'b');
+			reverse_rotate(lol[1], lol[3][0], 'b');
 			result[3]++;
 		}
 	}
 	else if (result[0] != result[2] && result[0] == -1)
 	{
-		while ((result[1] != lengths[0] + 1) && (result[1] < lengths[0]))
+		while ((result[1] != lol[2][0] + 1) && (result[1] < lol[2][0]))
 		{
-			reverse_rotate(a, lengths[0], 'a');
+			reverse_rotate(lol[0], lol[2][0], 'a');
 			result[1]++;
 		}
 		while ((result[3] != 0) && (result[3] > 0))
 		{
-			rotate(b, lengths[1], 'b');
+			rotate(lol[1], lol[3][0], 'b');
 			result[3]--;
 		}
 	}
-	printf("len_a before pa: %i\n", lengths[0]);
-	push(a, &lengths[0], b, &lengths[1]);
-	write(1, "pb\n", 3);
-	printf("len_a after pa: %i\n", lengths[0]);
 }
 
-int cases(int *a, int *b, int *lengths, int **temp)
+int cases(int *a, int *b, int **lol)
 {
-	int a_direction = temp[0][0];
-	int b_direction = temp[1][0];
-	int a_index = temp[0][1];
-	int b_index = temp[1][1];
-	int a_len = lengths[0];
-	int b_len = lengths[1];
+	int a_direction = a[0];
+	int b_direction = b[0];
+	int a_index = a[1];
+	int b_index = b[1];
+	int a_len = lol[2][0];
+	int b_len = lol[3][0];
 	int cost = 0;
 	if (a_direction == b_direction && b_direction == 1)
 	{
-		while (a_index != 0 && b_index != 0)
+		while (a_index != 0 || b_index != 0)
 		{
 			cost++;
 			a_index -= 1;
@@ -465,34 +479,34 @@ int cases(int *a, int *b, int *lengths, int **temp)
 			}
 		}
 	}
-	else if (a_direction == b_direction && b_direction == -1)
+	else if (a[0] == b[0] && a[0] == -1)
 	{
-		while (a_index != a_len || b_index != b_len)
+		while (a_index != a_len + 1 || b_index != b_len + 1)
 		{
 			cost++;
 			a_index += 1;
 			b_index += 1;
 		}
-		if (a_index != a_len)
+		if (a_index != a_len + 1)
 		{
-			while (a_index != a_len)
+			while (a_index != a_len + 1)
 			{
 				cost++;
 				a_index += 1;
 			}
 		}
-		else if (b_index != b_len)
+		else if (b_index != b_len + 1)
 		{
-			while (b_index != b_len)
+			while (b_index != b_len + 1)
 			{
 				cost++;
 				b_index += 1;
 			}
 		}
 	}
-	else if (a_direction != b_direction && a_direction == 1)
+	else if (a[0] != b[0] && a[0] == 1)
 	{
-		while (b_index != b_len)
+		while (b_index != b_len + 1)
 		{
 			cost++;
 			b_index += 1;
@@ -503,9 +517,9 @@ int cases(int *a, int *b, int *lengths, int **temp)
 			a_index -= 1;
 		}
 	}
-	else if (a_direction != b_direction && a_direction == -1)
+	else if (a[0] != b[0] && a[0] == -1)
 	{
-		while (a_index != a_len)
+		while (a_index != a_len + 1)
 		{
 			cost++;
 			a_index += 1;
@@ -519,73 +533,54 @@ int cases(int *a, int *b, int *lengths, int **temp)
 	return (cost);
 }
 
-int	*find_cheapest(int *a, int *b, int *lengths, int *targets)
+int	*find_cheapest(int **lol, int *targets)
 {
 	int	i;
 	int	cheapest_index;
 	int	cost;
 	int	*result;
-	int	**temp;
+	int	*temp;
+	int	*temp1;
 
 	cost = INT_MAX;
-	temp = (int **)malloc(2 * sizeof(int *));
-	if (temp == NULL)
+	temp = (int *)malloc(sizeof(int) * 2);
+	if (!temp)
 	{
-		free(a);
-		free(b);
-		free(lengths);
+		free2darray(lol, 4);
 		free(targets);
 		exiterror();
 	}
-	temp[0] = (int *)malloc(2 * sizeof(int));
-	if (temp[0] == NULL)
+	temp1 = (int *)malloc(sizeof(int) * 2);
+	if (!temp1)
 	{
-		free(temp);
-		free(a);
-		free(b);
-		free(lengths);
+		free2darray(lol, 4);
 		free(targets);
-		exiterror();
-	}
-	temp[1] = (int *)malloc(2 * sizeof(int));
-	if (temp[1] == NULL)
-	{
 		free(temp);
-		free(temp[0]);
-		free(a);
-		free(b);
-		free(lengths);
-		free(targets);
 		exiterror();
 	}
 	result = (int *)malloc(sizeof(int) * 4);
 	if (!result)
 	{
-		free(temp);
-		free(temp[0]);
-		free(temp[1]);
-		free(a);
-		free(b);
-		free(lengths);
+		free2darray(lol, 4);
 		free(targets);
 		free(temp);
+		free(temp1);
 		exiterror();
 	}
 	i = 0;
-	while (i < lengths[0])
+	printf("test1 %i\n", lol[2][0]);
+	while (i < (int)lol[2][0])
 	{
-		//rotationsToBringElementToTop(a, , i); // prob
-		temp[0] = rotations_to_bring_to_top(i, lengths[0]);
-		temp[1] = rotations_to_bring_to_top(targets[i], lengths[1]);
-		//temp[1] = rotationsToBringElementToTop(b, lengths[1], targets[i]);
-		if (cases(a, b, lengths, temp) < cost)
+		printf("i: %i\n", i);
+		temp = rotationsToBringElementToTop(lol[0], lol[2][0], i);
+		temp1 = rotationsToBringElementToTop(lol[1], lol[3][0], targets[i]);
+		if (cases(temp, temp1, lol) < cost)
 		{
-			cost = cases(a, b, lengths, temp);
-			result[0] = temp[0][0];
-			result[2] = temp[1][0];
+			cost = cases(temp, temp1, lol);
+			result[0] = temp[0];
+			result[2] = temp1[0];
 			result[1] = i;
 			result[3] = targets[i];
-			printf("result: (a) dir: %i index: %i, b (target) dir: %i, ind: %i\n", temp[0][0], i, temp[1][0], targets[i]);
 		}
 		i++;
 	}
@@ -614,7 +609,7 @@ void	sort11(int *a, int *len_a, int *b, int *len_b)
 		if (temp_value == INT_MAX)
 			temp_index = find_smallest_index(b, *len_b);
 		// now we have the target index and value
-		if (temp_index <= *len_a/2)
+		if (temp_index < *len_a/2)
 		{
 			while(temp_index > 0)
 			{
@@ -622,7 +617,7 @@ void	sort11(int *a, int *len_a, int *b, int *len_b)
 				temp_index--;
 			}
 		}
-		else if (temp_index > *len_a/2)
+		else if (temp_index >= *len_a/2)
 		{
 			while (temp_index < *len_a)
 			{
@@ -655,7 +650,7 @@ void	sort11(int *a, int *len_a, int *b, int *len_b)
 void	sort1(int *a, int *len_a, int *b, int *len_b)
 {
 	int	*targets;
-	int	*lengths;
+	int	**lol;
 	int	*result;
 	int	i;
 
@@ -671,27 +666,21 @@ void	sort1(int *a, int *len_a, int *b, int *len_b)
 	}
 	if (*len_a != 3)
 	{
-		lengths = (int *)malloc(sizeof(int)*2);
-		lengths[0] = *len_a;
-		lengths[1] = *len_b;
-		//lol = create2DArray(a, *len_a, b, *len_b);
+		targets = (int *)malloc(sizeof(int) * (*len_a));
+		if (!targets)
+			exiterror1(a, b);
+		lol = create2DArray(a, *len_a, b, *len_b);
+		assign_targets(targets, lol);
 		i = 0;
-		printf("start len: %i & %i\n", *len_a, lengths[0]);
-		while (*len_a != 3)
+		printf("test\n");
+		while (lol[2][0] != 3)
 		{
-			targets = (int *)malloc(sizeof(int) * (*len_a));
-			if (!targets)
-				exiterror1(a, b);
-			assign_targets(targets, a, b, lengths);
-			for (int j = 0; j < *len_a; j++)
-				printf("target element #%i: %i\n", j, targets[j]);
-			printf("len_a: %i & %i\n", *len_a, lengths[0]);
-			result = find_cheapest(a, b, lengths, targets);
-			len_a = &lengths[0];
-			len_b = &lengths[1];
-			process(result, a, b, lengths);
-			free(targets);
+			result = find_cheapest(lol, targets);
+			printf("lol[2][0]: %i\n", lol[2][0]);
+			process(result, lol);
 		}
+		printf("test\n");
+		free(targets);
 	}
 	sort3(a);
 	sort11(a, len_a, b, len_b);
@@ -702,7 +691,7 @@ int	*push_swap(int *a, int len_a)
 	int	*b;
 	int	len_b;
 
-	b = (int *)malloc(sizeof(int) * (len_a));
+	b = (int *)malloc(sizeof(int) * len_a);
 	if (!b)
 		exiterror();
 	len_b = 0;
@@ -724,7 +713,7 @@ int	*push_swap(int *a, int len_a)
 // Main function to test the push_swap function
 int	main(void)
 {
-	int	case1[] = {1, 3, 2, 4, 5, -1};
+	int	case1[] = {1, 3, 2, 6, 4, 10};
 	int	case2[] = {2, 1};
 	int	case3[] = {3, 2, 1};
 	int	case4[] = {1, 3, 2};
@@ -740,7 +729,7 @@ int	main(void)
 	int	*arr7;
 
 	// Test case 1: Already sorted
-	printf("Test case 1 (1, 3, 2, 4, 5, -1):\n");
+	printf("Test case 1 (1, 3, 2, 4, 90, -3331):\n");
 	arr1 = malloc(6 * sizeof(int));
 	if (!arr1)
 		exiterror();
