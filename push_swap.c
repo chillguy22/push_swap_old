@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/06/05 17:48:03 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/06/06 17:51:15 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,6 +287,23 @@ int	find_big_index(int *arr, int len)
 	}
 	return (max_index);
 }
+int find_smallest_index(int *arr, int len)
+{
+    int i;
+    int min_index;
+
+    if (len <= 0)
+        return (-1);
+    i = 1;
+    min_index = 0;
+    while (i < len)
+    {
+        if (arr[i] < arr[min_index])
+            min_index = i;
+        i++;
+    }
+    return (min_index);
+}
 
 void	assign_targets(int *targets, int **lol)
 {
@@ -551,8 +568,10 @@ int	*find_cheapest(int **lol, int *targets)
 		exiterror();
 	}
 	i = 0;
+	printf("test1 %i\n", lol[2][0]);
 	while (i < lol[2][0])
 	{
+		printf("i: %i", i);
 		temp = rotationsToBringElementToTop(lol[0], lol[2][0], i);
 		temp1 = rotationsToBringElementToTop(lol[1], lol[3][0], targets[i]);
 		if (cases(temp, temp1, lol) < cost)
@@ -566,6 +585,66 @@ int	*find_cheapest(int **lol, int *targets)
 		i++;
 	}
 	return (result);
+}
+void	sort11(int *a, int *len_a, int *b, int *len_b)
+{
+	int cost;
+	int i;
+	int temp_index;
+	int temp_value;
+
+	while(*len_b > 0)
+	{
+		i = 0;
+		temp_value = INT_MAX;
+		while(i < *len_a)
+		{
+			if(a[i] > b[0] && a[i] < temp_value)
+			{
+				temp_index = i;
+				temp_value = a[i];
+			}
+			i++;
+		}
+		if (temp_value == INT_MAX)
+			temp_index = find_smallest_index(b, *len_b);
+		// now we have the target index and value
+		if (temp_index < *len_a/2)
+		{
+			while(temp_index > 0)
+			{
+				rotate(a, *len_a, 'a');
+				temp_index--;
+			}
+		}
+		else if (temp_index >= *len_a/2)
+		{
+			while (temp_index < *len_a)
+			{
+				reverse_rotate(a, *len_a, 'a');
+				temp_index++;
+			}
+		}
+		push(b, len_b, a, len_a);
+		write(1, "pa\n", 3);
+	}
+	temp_index = find_smallest_index(b, *len_b);
+	if (temp_index < *len_a/2)
+	{
+		while(temp_index > 0)
+		{
+			rotate(a, *len_a, 'a');
+			temp_index--;
+		}
+	}
+	else if (temp_index >= *len_a/2)
+	{
+		while (temp_index < *len_a)
+		{
+			reverse_rotate(a, *len_a, 'a');
+			temp_index++;
+		}
+	}
 }
 
 void	sort1(int *a, int *len_a, int *b, int *len_b)
@@ -593,14 +672,18 @@ void	sort1(int *a, int *len_a, int *b, int *len_b)
 		lol = create2DArray(a, *len_a, b, *len_b);
 		assign_targets(targets, lol);
 		i = 0;
+		printf("test\n");
 		while (lol[2][0] != 3)
 		{
 			result = find_cheapest(lol, targets);
+			printf("lol[2][0]: %i\n", lol[2][0]);
 			process(result, lol);
 		}
+		printf("test\n");
+		free(targets);
 	}
 	sort3(a);
-	// sort 3 <-- sort
+	sort11(a, len_a, b, len_b);
 }
 
 int	*push_swap(int *a, int len_a)
@@ -608,7 +691,6 @@ int	*push_swap(int *a, int len_a)
 	int	*b;
 	int	len_b;
 
-	printf("len: %i\n", len_a);
 	b = (int *)malloc(sizeof(int) * len_a);
 	if (!b)
 		exiterror();
@@ -631,7 +713,7 @@ int	*push_swap(int *a, int len_a)
 // Main function to test the push_swap function
 int	main(void)
 {
-	int	case1[] = {1, 3, 2, 4};
+	int	case1[] = {1, 3, 2, 4, 90, -3331};
 	int	case2[] = {2, 1};
 	int	case3[] = {3, 2, 1};
 	int	case4[] = {1, 3, 2};
@@ -647,13 +729,13 @@ int	main(void)
 	int	*arr7;
 
 	// Test case 1: Already sorted
-	printf("Test case 1 (1, 2, 3):\n");
-	arr1 = malloc(4 * sizeof(int));
+	printf("Test case 1 (1, 3, 2, 4, 90, -3331):\n");
+	arr1 = malloc(6 * sizeof(int));
 	if (!arr1)
 		exiterror();
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 6; i++)
 		arr1[i] = case1[i];
-	push_swap(arr1, 4);
+	push_swap(arr1, 6);
 	free(arr1);
 	// // Test case 2: Two elements unsorted
 	// printf("Test case 2 (2, 1):\n");
