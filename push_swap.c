@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/06/07 14:53:11 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/06/07 15:20:32 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -467,7 +467,7 @@ int cases(int *a, int *b, int *lengths, int **temp)
 	}
 	else if (a_direction == b_direction && b_direction == -1)
 	{
-		while (a_index != a_len || b_index != b_len)
+		while (a_index != a_len && b_index != b_len)
 		{
 			cost++;
 			a_index += 1;
@@ -677,22 +677,25 @@ void	sort1(int *a, int *len_a, int *b, int *len_b)
 		//lol = create2DArray(a, *len_a, b, *len_b);
 		i = 0;
 		//printf("start len: %i & %i\n", *len_a, lengths[0]);
-		while (*len_a != 3)
+		while (lengths[0] != 3)
 		{
 			targets = (int *)malloc(sizeof(int) * (*len_a));
 			if (!targets)
 				exiterror1(a, b);
 			assign_targets(targets, a, b, lengths);
-			for (int j = 0; j < *len_a; j++)
+			//for (int j = 0; j < *len_a; j++)
 			//	printf("target element #%i: %i\n", j, targets[j]);
 			//printf("len_a: %i & %i\n", *len_a, lengths[0]);
 			result = find_cheapest(a, b, lengths, targets);
-			len_a = &lengths[0];
-			len_b = &lengths[1];
+			// len_a = &lengths[0];
+			// len_b = &lengths[1];
 			process(result, a, b, lengths);
+			*len_a = lengths[0];
 			free(targets);
 		}
 	}
+	*len_a = lengths[0];
+	*len_b = lengths[1];
 	sort3(a);
 	sort11(a, len_a, b, len_b);
 }
@@ -740,8 +743,8 @@ int	main(void)
 	int len;
 
 	// Test case 1: Already sorted
-	int	case1[] = {1, 3, 2, 4, 5, -1};
-	len = 6;
+	int	case1[] = {1, 3, 2, 4, 5, -1, -33333, 234, 2222};
+	len = 9;
 	arr1 = malloc(len * sizeof(int));
 	if (!arr1)
 		exiterror();
