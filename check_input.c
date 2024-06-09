@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   push_swap.c                                        :+:      :+:    :+:   */
+/*   check_input.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/05/21 17:45:21 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/06/09 14:12:48 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
-void	exiterror(void)
+void	exit_zero(void)
 {
 	printf("Error\n");
 	exit(0);
 }
 
-void	exiterror1(int *tab)
+void	exit_free(int *tab)
 {
 	free(tab);
 	printf("Error\n");
@@ -81,7 +81,7 @@ int	ft_atoi(const char *str)
 	if (((!(str[i] >= '0' && str[i] <= '9')) && (str[i] != '\0')
 			&& (!(is_space(str[i])))) || (((num * sign) > 2147483648) || ((num
 					* sign) < -2147483647)))
-		exiterror();
+		exit_zero();
 	return (num * sign);
 }
 
@@ -126,13 +126,13 @@ int	check_inputs(char **argv, int argc)
 
 	tab = (int *)malloc(sizeof(int) * (argc - 1));
 	if (!tab)
-		exiterror();
+		exit_zero();
 	i = 1;
 	while (i < argc)
 	{
 		tab[i - 1] = ft_atoi(argv[i]);
 		if (check_duplicates(tab, tab[i - 1], i - 1))
-			exiterror1(tab);
+			exit_free(tab);
 		i++;
 	}
 	free(tab);
@@ -162,7 +162,7 @@ int	*ft_split(char *str)
 				str++;
 		}
 		else
-			exiterror1(tab);
+			exit_free(tab);
 	}
 	return (tab);
 }
@@ -174,7 +174,7 @@ int	*extract(int argc, char **argv)
 
 	tab = (int *)malloc((argc - 1) * sizeof(int));
 	if (!tab)
-		exiterror();
+		exit_zero();
 	i = 1;
 	while (i < argc)
 	{
@@ -190,7 +190,7 @@ int	main(int argc, char **argv)
 	int	*tab;
 
 	if (argc < 2 || (argc > 2 && check_inputs(argv, argc)))
-		exiterror();
+		exit_zero();
 	if (argc == 2)
 	{
 		count = words_count(argv[1]);
@@ -199,13 +199,13 @@ int	main(int argc, char **argv)
 		{
 			tab = ft_split(argv[1]);
 			if (check_duplicates1(tab, count))
-				exiterror1(tab);
+				exit_free(tab);
 			for (int k = 0; k < count; k++)
 				printf("Element %i: %i\n", k, tab[k]);
 			// push_swap(tab);
 		}
 		else
-			exiterror();
+			exit_zero();
 		return (0);
 	}
 	tab = extract((argc), argv);
