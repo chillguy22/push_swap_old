@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/06/10 16:09:04 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/06/10 16:34:26 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -983,10 +983,20 @@ int	*push_swap(int *a, int len_a)
 // }
 
 
-int	main(int argc, char **argv)
+int	main(int argc, char **argv) // int argc, char **argv
 {
 	int	count;
 	int	*tab;
+
+	// char *argv[] = {
+	// 	"./a.out",
+    //     "1",
+    //     "43",
+    //     "214",
+    //     "3134",
+    //     NULL  // Null-terminated to simulate the end of the array as in argv
+    // };
+	// int argc = 5;
 
 	if (argc < 2 || (argc > 2 && check_inputs(argv, argc)))
 		exit_zero();
