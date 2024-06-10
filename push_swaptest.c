@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/06/09 14:46:21 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/06/10 14:18:03 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,12 @@
 void	exit_zero(void)
 {
 	printf("Error\n");
+	exit(0);
+}
+
+void	exit_suc(int *tab)
+{
+	free(tab);
 	exit(0);
 }
 
@@ -231,20 +237,22 @@ void	push(int *a, int *len_a, int *b, int *len_b)
 {
 	int	i;
 
+	i = *len_b;
 	if (*len_a == 0)
 		return ;
-	// Shift elements in b to the right to make space for the new element
-	for (i = *len_b; i > 0; i--)
+	while (i > 0)
 	{
 		b[i] = b[i - 1];
+		i--;
 	}
-	b[0] = a[0]; // Move the first element of a to the first position of b
-	(*len_b)++; // Increment the length of b
-	(*len_a)--; // Decrement the length of a
-	// Shift elements in a to the left to fill the gap
-	for (i = 0; i < *len_a; i++)
+	b[0] = a[0];
+	(*len_b)++;
+	(*len_a)--;
+	i = 0;
+	while (i < *len_a)
 	{
 		a[i] = a[i + 1];
+		i++;
 	}
 }
 
@@ -365,8 +373,6 @@ int	check_if_sorted(int *tab, int len)
 
 void	sort2(int *a)
 {
-	int	temp;
-
 	if (a[0] > a[1])
 		write(1, "ra\n", 3);
 	return ;
@@ -400,32 +406,6 @@ void	sort3(int *a)
 	}
 }
 
-int	**create2DArray(int *array1, int length1, int *array2, int length2)
-{
-	int	**array2d;
-	int	i;
-
-	array2d = (int **)malloc(2 * sizeof(int *));
-	array2d[0] = (int *)malloc(length1 * sizeof(int));
-	array2d[1] = (int *)malloc(length2 * sizeof(int));
-	array2d[2] = (int *)malloc(1 * sizeof(int));
-	array2d[3] = (int *)malloc(1 * sizeof(int));
-	i = 0;
-	while (i < length1)
-	{
-		array2d[0][i] = array1[i];
-		i++;
-	}
-	i = 0;
-	while (i < length2)
-	{
-		array2d[1][i] = array2[i];
-		i++;
-	}
-	array2d[2][0] = length1;
-	array2d[3][0] = length2;
-	return (array2d); // remember to free
-}
 
 int	find_big_index(int *arr, int len)
 {
@@ -499,27 +479,19 @@ int	*rotations_to_bring_to_top(int i, int len)
 {
 	int	*result;
 
-	// Allocate memory for the result array
 	result = (int *)malloc(2 * sizeof(int));
 	if (result == NULL)
-	{
-		perror("Failed to allocate memory for result array");
-		exit(EXIT_FAILURE);
-	}
-	// Calculate rotations needed for both directions
-	int rotations_up = i;        
-		// Rotations needed to bring i to the top by rotating upwards
+		return (NULL);
+	int rotations_up = i;
 	int rotations_down = len - i;
-		// Rotations needed to bring i to the top by rotating downwards
-	// Determine the faster direction
 	if (rotations_up <= rotations_down)
 	{
-		result[0] = 1; // 1 for upwards
+		result[0] = 1;
 		result[1] = rotations_up;
 	}
 	else
 	{
-		result[0] = -1; // -1 for downwards
+		result[0] = -1;
 		result[1] = rotations_down;
 	}
 	return (result);
@@ -696,7 +668,6 @@ int	cases(int *a, int *b, int *lengths, int **temp)
 int	*find_cheapest(int *a, int *b, int *lengths, int *targets)
 {
 	int	i;
-	int	cheapest_index;
 	int	cost;
 	int	*result;
 	int	**temp;
@@ -709,41 +680,19 @@ int	*find_cheapest(int *a, int *b, int *lengths, int *targets)
 		free(b);
 		free(lengths);
 		free(targets);
-		exit_zero();
-	}
-	temp[0] = (int *)malloc(2 * sizeof(int));
-	if (temp[0] == NULL)
-	{
-		free(temp);
-		free(a);
-		free(b);
-		free(lengths);
-		free(targets);
-		exit_zero();
-	}
-	temp[1] = (int *)malloc(2 * sizeof(int));
-	if (temp[1] == NULL)
-	{
-		free(temp);
-		free(temp[0]);
-		free(a);
-		free(b);
-		free(lengths);
-		free(targets);
-		exit_zero();
+		return (NULL);
 	}
 	result = (int *)malloc(sizeof(int) * 4);
 	if (!result)
 	{
-		free(temp);
 		free(temp[0]);
 		free(temp[1]);
+		free(temp);
 		free(a);
 		free(b);
 		free(lengths);
 		free(targets);
-		free(temp);
-		exit_zero();
+		return (NULL);
 	}
 	i = 0;
 	while (i < lengths[0])
@@ -762,13 +711,15 @@ int	*find_cheapest(int *a, int *b, int *lengths, int *targets)
 			// printf("result: (a) dir: %i index: %i, b (target) dir: %i, ind:
 			//	%i\n", temp[0][0], i, temp[1][0], targets[i]);
 		}
+		free(temp[0]);
+		free(temp[1]);
 		i++;
 	}
+	free(temp);
 	return (result);
 }
 void	sort11(int *a, int *len_a, int *b, int *len_b)
 {
-	int	cost;
 	int	i;
 	int	temp_index;
 	int	temp_value;
@@ -832,7 +783,6 @@ void	sort1(int *a, int *len_a, int *b, int *len_b)
 	int	*targets;
 	int	*lengths;
 	int	*result;
-	int	i;
 
 	if (*len_a >= 4)
 	{
@@ -850,7 +800,6 @@ void	sort1(int *a, int *len_a, int *b, int *len_b)
 		lengths[0] = *len_a;
 		lengths[1] = *len_b;
 		// lol = create2DArray(a, *len_a, b, *len_b);
-		i = 0;
 		// printf("start len: %i & %i\n", *len_a, lengths[0]);
 		while (lengths[0] != 3)
 		{
@@ -862,15 +811,23 @@ void	sort1(int *a, int *len_a, int *b, int *len_b)
 			//	printf("target element #%i: %i\n", j, targets[j]);
 			// printf("len_a: %i & %i\n", *len_a, lengths[0]);
 			result = find_cheapest(a, b, lengths, targets);
+			if (!result)
+			{
+				free(lengths);
+				free(targets);
+				exit_free2(a, b);
+			}
 			// len_a = &lengths[0];
 			// len_b = &lengths[1];
 			process(result, a, b, lengths);
 			*len_a = lengths[0];
-			free(targets);
+			free(result);
 		}
 	}
 	*len_a = lengths[0];
 	*len_b = lengths[1];
+	free(targets);
+	free(lengths);
 	sort3(a);
 	sort11(a, len_a, b, len_b);
 }
@@ -899,104 +856,23 @@ int	*push_swap(int *a, int len_a)
 	free(b);
 	return (a);
 }
-// Main function to test the push_swap function
-// int	main(void)
-// {
-// 	int	case2[] = {2, 1};
-// 	int	case3[] = {3, 2, 1};
-// 	int	case4[] = {1, 3, 2};
-// 	int	case5[] = {2, 3, 1};
-// 	int	case6[] = {2, 1, 3};
-// 	int	case7[] = {3, 1, 2};
-// 	int	*arr1;
-// 	int	*arr2;
-// 	int	*arr3;
-// 	int	*arr4;
-// 	int	*arr5;
-// 	int	*arr6;
-// 	int	*arr7;
-// 	int	len;
-// 	int	case1[] = {1, -3, -2, 4, -5, -1, -33333, 234, 2222, 3931, -222, 21};
 
-// 	// Test case 1: Already sorted
-// 	len = 12;
-// 	arr1 = malloc(len * sizeof(int));
-// 	if (!arr1)
-// 		exit_zero();
-// 	printf("Test case: ");
-// 	for (int i = 0; i < len; i++)
-// 	{
-// 		arr1[i] = case1[i];
-// 		if (i != len - 1)
-// 			printf("%i, ", arr1[i]);
-// 		else
-// 			printf("%i", arr1[i]);
-// 	}
-// 	arr1 = push_swap(arr1, len);
-// 	printf("\nSorted array:\n");
-// 	for (int i = 0; i < len; i++)
-// 		printf("Element #%i: %i\n", i, arr1[i]);
-// 	free(arr1);
-// 	// // Test case 2: Two elements unsorted
-// 	// printf("Test case 2 (2, 1):\n");
-// 	// arr2 = malloc(2 * sizeof(int));
-// 	// if (!arr2)
-// 	// 	exit_zero();
-// 	// for (int i = 0; i < 2; i++)
-// 	// 	arr2[i] = case2[i];
-// 	// push_swap(arr2, 2);
-// 	// free(arr2);
-// 	// // Test case 3: Three elements reverse sorted
-// 	// printf("Test case 3 (3, 2, 1):\n");
-// 	// arr3 = malloc(3 * sizeof(int));
-// 	// if (!arr3)
-// 	// 	exit_zero();
-// 	// for (int i = 0; i < 3; i++)
-// 	// 	arr3[i] = case3[i];
-// 	// push_swap(arr3, 3);
-// 	// free(arr3);
-// 	// // Test case 4: Three elements middle unsorted
-// 	// printf("Test case 4 (1, 3, 2):\n");
-// 	// arr4 = malloc(3 * sizeof(int));
-// 	// if (!arr4)
-// 	// 	exit_zero();
-// 	// for (int i = 0; i < 3; i++)
-// 	// 	arr4[i] = case4[i];
-// 	// push_swap(arr4, 3);
-// 	// free(arr4);
-// 	// // Test case 5: Three elements last unsorted
-// 	// printf("Test case 5 (2, 3, 1):\n");
-// 	// arr5 = malloc(3 * sizeof(int));
-// 	// if (!arr5)
-// 	// 	exit_zero();
-// 	// for (int i = 0; i < 3; i++)
-// 	// 	arr5[i] = case5[i];
-// 	// push_swap(arr5, 3);
-// 	// free(arr5);
-// 	// printf("Test case 6 (2, 1, 3):\n");
-// 	// arr6 = malloc(3 * sizeof(int));
-// 	// if (!arr6)
-// 	// 	exit_zero();
-// 	// for (int i = 0; i < 3; i++)
-// 	// 	arr6[i] = case6[i];
-// 	// push_swap(arr6, 3);
-// 	// free(arr6);
-// 	// printf("Test case 7 (3, 1, 2):\n");
-// 	// arr7 = malloc(3 * sizeof(int));
-// 	// if (!arr7)
-// 	// 	exit_zero();
-// 	// for (int i = 0; i < 3; i++)
-// 	// 	arr7[i] = case7[i];
-// 	// push_swap(arr7, 3);
-// 	// free(arr7);
-// 	return (0);
-// }
-
-
-int	main(int argc, char **argv)
+int	main() //int argc, char **argv
 {
 	int	count;
 	int	*tab;
+
+	char *argv[] = {
+		"./a.out",
+        "1",
+        "3",
+        "4",
+        "5",
+        "0",
+        "-1",
+        NULL  // Null-terminated to simulate the end of the array as in argv
+    };
+	int argc = 7;
 
 	if (argc < 2 || (argc > 2 && check_inputs(argv, argc)))
 		exit_zero();
@@ -1014,10 +890,9 @@ int	main(int argc, char **argv)
 			push_swap(tab, count);
 			for (int b = 0; b < count; b++)
 				printf("Element %i after sorting: %i\n", b, tab[b]);
+			exit_suc(tab);
 		}
-		else
-			exit_zero();
-		return (0);
+		exit_zero();
 	}
 	tab = extract((argc), argv);
 	for (int k = 0; k < argc - 1; k++)
@@ -1026,5 +901,6 @@ int	main(int argc, char **argv)
 	for (int b = 0; b < argc - 1; b++)
 		printf("Element %i after sorting: %i\n", b, tab[b]);
 	free(tab);
-	return (0);
+	return 0;
 }
+
