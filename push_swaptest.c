@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/06/10 17:51:36 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/06/11 20:37:45 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	exit_free4(int *a, int *b, int *c, int *d)
 	exit(0);
 }
 
-static int	is_space(char c)
+int	is_space(char c)
 {
 	if (c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f'
 		|| c == '\r')
@@ -72,7 +72,7 @@ static int	is_space(char c)
 		return (0);
 }
 
-static int	words_count(const char *str)
+int	words_count(const char *str)
 {
 	int	i;
 	int	count;
@@ -372,8 +372,6 @@ int	check_if_sorted(int *tab, int len)
 
 void	sort2(int *a)
 {
-	int	temp;
-
 	if (a[0] > a[1])
 		write(1, "ra\n", 3);
 	return ;
@@ -592,7 +590,7 @@ void	process(int *result, int *a, int *b, int *lengths)
 	write(1, "pb\n", 3);
 }
 
-int	process_case11(int a_index, int b_index, int a_len, int b_len)
+int	process_case11(int a_index, int b_index)
 {
 	int	cost;
 
@@ -640,7 +638,7 @@ int	process_case22(int a_index, int b_index, int a_len, int b_len)
 	return (cost);
 }
 
-int	process_case33(int a_index, int b_index, int a_len, int b_len)
+int	process_case33(int a_index, int b_index, int b_len)
 {
 	int	cost;
 
@@ -658,7 +656,7 @@ int	process_case33(int a_index, int b_index, int a_len, int b_len)
 	return (cost);
 }
 
-int	process_case44(int a_index, int b_index, int a_len, int b_len)
+int	process_case44(int a_index, int b_index, int a_len)
 {
 	int	cost;
 
@@ -676,7 +674,7 @@ int	process_case44(int a_index, int b_index, int a_len, int b_len)
 	return (cost);
 }
 
-int	cases(int *a, int *b, int *lengths, int **temp)
+int	cases(int *lengths, int **temp)
 {
 	int	a_direction;
 	int	b_direction;
@@ -688,14 +686,15 @@ int	cases(int *a, int *b, int *lengths, int **temp)
 	b_direction = temp[1][0];
 	a_index = temp[0][1];
 	b_index = temp[1][1];
+	cost = 0;
 	if (a_direction == b_direction && b_direction == 1)
-		cost = process_case11(a_index, b_index, lengths[0], lengths[0]);
+		cost = process_case11(a_index, b_index);
 	else if (a_direction == b_direction && b_direction == -1)
 		cost = process_case22(a_index, b_index, lengths[0], lengths[0]);
 	else if (a_direction != b_direction && a_direction == 1)
-		cost = process_case33(a_index, b_index, lengths[0], lengths[0]);
+		cost = process_case33(a_index, b_index, lengths[0]);
 	else if (a_direction != b_direction && a_direction == -1)
-		cost = process_case44(a_index, b_index, lengths[0], lengths[0]);
+		cost = process_case44(a_index, b_index, lengths[0]);
 	return (cost);
 }
 
@@ -713,27 +712,45 @@ int	**create2d(int *a, int *b, int *lengths, int *targets)
 	return (combined);
 }
 
+int	calculate_cost(int *result, int **temp, int **combined, int i, int *cost)
+{
+	int	new_cost;
+
+	temp[0] = rotations_to_bring_to_top(i, combined[2][0]);
+	temp[1] = rotations_to_bring_to_top(*combined[3], combined[2][1]);
+	new_cost = cases(combined[2], temp);
+	if (new_cost < *cost)
+	{
+		*cost = new_cost;
+		result[0] = temp[0][0];
+		result[2] = temp[1][0];
+		result[1] = i;
+		result[3] = combined[3][i];
+		if (*cost == 0)
+		{
+			free_two(temp[0], temp[1]);
+			return (0);
+		}
+	}
+	free_two(temp[0], temp[1]);
+	return (new_cost);
+}
+
 int	*do_stuff(int *result, int **temp, int **combined)
 {
 	int	i;
 	int	cost;
+	int	new_cost;
 
 	cost = INT_MAX;
 	i = 0;
 	while (i < combined[2][0])
 	{
-		temp[0] = rotations_to_bring_to_top(i, combined[2][0]);
-		temp[1] = rotations_to_bring_to_top(*combined[3], combined[2][1]);
-		if (cases(combined[0], combined[1], combined[2], temp) < cost)
+		new_cost = calculate_cost(result, temp, combined, i, &cost);
+		if (new_cost == 0)
 		{
-			cost = cases(combined[0], combined[1], combined[2], temp);
-			result[0] = temp[0][0];
-			result[2] = temp[1][0];
-			result[1] = i;
-			result[3] = combined[3][i];
+			return (result);
 		}
-		free(temp[0]);
-		free(temp[1]);
 		i++;
 	}
 	return (result);
@@ -842,12 +859,10 @@ void	process_remaining111(int *a, int *len_a, int *b, int *len_b)
 	int	*targets;
 	int	*lengths;
 	int	*result;
-	int	i;
 
 	lengths = (int *)malloc(sizeof(int) * 2);
 	lengths[0] = *len_a;
 	lengths[1] = *len_b;
-	i = 0;
 	while (lengths[0] != 3)
 	{
 		targets = (int *)malloc(sizeof(int) * (*len_a));
