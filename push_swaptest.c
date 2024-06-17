@@ -6,7 +6,7 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 20:19:07 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/06/11 20:37:45 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/06/12 15:01:47 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -510,18 +510,18 @@ int	*rotations_to_bring_to_top(int i, int len)
 
 void	process_case1(int *result, int *a, int *b, int *lengths)
 {
-	while (result[1] != 0 && result[3] != 0)
+	while (result[1] > 0 && result[3] > 0)
 	{
 		rotateboth(a, b, lengths[0], lengths[1]);
-		result[1] -= 1;
-		result[3] -= 1;
+		result[1]--;
+		result[3]--;
 	}
-	while (result[1] != 0)
+	while (result[1] > 0)
 	{
 		rotate(a, lengths[0], 'a');
 		result[1]--;
 	}
-	while (result[3] != 0)
+	while (result[3] > 0)
 	{
 		rotate(b, lengths[1], 'b');
 		result[3]--;
@@ -530,18 +530,18 @@ void	process_case1(int *result, int *a, int *b, int *lengths)
 
 void	process_case2(int *result, int *a, int *b, int *lengths)
 {
-	while (result[1] != lengths[0] + 1 && result[3] != lengths[1] + 1)
+	while (result[1] < lengths[0] + 1 && result[3] < lengths[1] + 1)
 	{
 		reverse_rotateboth(a, b, lengths[0], lengths[1]);
-		result[1] += 1;
-		result[3] += 1;
+		result[1]++;
+		result[3]++;
 	}
-	while ((result[1] != lengths[0] + 1) && (result[1] < lengths[0] + 1))
+	while (result[1] < lengths[0] + 1)
 	{
 		reverse_rotate(a, lengths[0], 'a');
 		result[1]++;
 	}
-	while ((result[3] != lengths[1] + 1) && (result[3] < lengths[1] + 1))
+	while (result[3] < lengths[1] + 1)
 	{
 		reverse_rotate(b, lengths[1], 'b');
 		result[3]++;
@@ -550,12 +550,12 @@ void	process_case2(int *result, int *a, int *b, int *lengths)
 
 void	process_case3(int *result, int *a, int *b, int *lengths)
 {
-	while ((result[1] != 0) && (result[1] > 0))
+	while (result[1] > 0)
 	{
 		rotate(a, lengths[0], 'a');
 		result[1]--;
 	}
-	while ((result[3] != lengths[1] + 1) && (result[3] < lengths[1]))
+	while (result[3] < lengths[1])
 	{
 		reverse_rotate(b, lengths[1], 'b');
 		result[3]++;
@@ -564,12 +564,12 @@ void	process_case3(int *result, int *a, int *b, int *lengths)
 
 void	process_case4(int *result, int *a, int *b, int *lengths)
 {
-	while ((result[1] != lengths[0] + 1) && (result[1] < lengths[0]))
+	while (result[1] < lengths[0])
 	{
 		reverse_rotate(a, lengths[0], 'a');
 		result[1]++;
 	}
-	while ((result[3] != 0) && (result[3] > 0))
+	while (result[3] > 0)
 	{
 		rotate(b, lengths[1], 'b');
 		result[3]--;
