@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/* ************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:24:17 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/06/18 15:48:16 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/06/17 17:56:32 by eaktimur         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/* ************************** */
 
 #include "push_swap.h"
 
@@ -256,6 +256,37 @@ void	print_stack(t_l **stack)
 	}
 }
 
+void	print_stack2(t_l **stack)
+{
+	t_l	*current;
+
+	// Check if the stack is empty
+	if (!stack || !*stack)
+	{
+		printf("Stack is empty\n");
+		return ;
+	}
+	// Find the first element where prev is NULL
+	current = *stack;
+	while (current && current->prev != NULL)
+	{
+		current = current->next;
+	}
+	// If no such element is found, the stack is invalid or empty
+	if (!current)
+	{
+		printf("Stack is empty or no node with prev == NULL\n");
+		return ;
+	}
+	// Print the stack starting from the first element
+	while (current)
+	{
+		printf("Value: %d, Index: %d, Push Cost: %d, Median: %d\nTarget Num: %d, Target Index: %d\n",
+			current->nbr, current->index, current->push_cost, current->median, current->target_node->nbr, current->target_node->index);
+		current = current->next;
+	}
+}
+
 void	handle_input(char **argv, int argc, t_l **a) // correct
 {
 	int i;
@@ -380,8 +411,8 @@ void	three_elem_sort(t_l **a)
 void	update_targets(t_l *a, t_l *b)
 {
 	t_l	*b_current;
-	t_l	*closest;
 	t_l	*a_current;
+	t_l	*closest;
 
 	b_current = b;
 	while (b_current != NULL)
@@ -399,13 +430,56 @@ void	update_targets(t_l *a, t_l *b)
 			}
 			a_current = a_current->next;
 		}
+		if (closest == NULL)
+			closest = find_highest(a);
 		b_current->target_node = closest;
 		b_current = b_current->next;
 	}
 }
 
+void push_cost(t_l *a_node, t_l *b_node) {
+	t_l *b = b_node;
+	t_l *a;
+	int temp;
+
+	while (b != NULL) {
+		a = b->target_node;
+		if (a == NULL) {
+			printf("Error: target_node for b_node is NULL\n");
+			b = b->next;
+			continue;
+		}
+
+		b->push_cost = 0;
+		temp = a->index + b->index;
+		if (b->index + (stack_size(a_node) - a->index) < temp)
+			temp = b->index + (stack_size(a_node) - a->index);
+		if (a->index + (stack_size(b_node) - b->index) < temp)
+			temp = a->index + (stack_size(b_node) - b->index);
+		if ((stack_size(a_node) - a->index) + (stack_size(b_node) - b->index) < temp)
+			temp = (stack_size(a_node) - a->index) + (stack_size(b_node) - b->index);
+
+		printf("%d, %d, %d, %d\n", stack_size(a_node), a->index, stack_size(b_node), b->index);
+		b->push_cost = temp;
+		b = b->next;
+	}
+}
+
 void	actual_push_swap(t_l *a, t_l *b)
 {
+	// update_indexes(&a, &b);
+	update_targets(a, b);
+	print_stack2(&b);
+	push_cost(a, b);
+	t_l *test;
+
+	test = b;
+	while (test != NULL)
+	{
+		printf("Push cost for %d: %d\n", test->nbr, test->push_cost);
+		test = test->next;
+	}
+	exit(0);
 	while (stack_size(a) >= 3)
 	{
 		if (stack_size(a) > 3)
@@ -420,15 +494,11 @@ void	actual_push_swap(t_l *a, t_l *b)
 			while (stack_size(b) > 0)
 			{
 				update_targets(a, b);
-				printf("stack size b: %i\n", stack_size(b));
-				for (int i = 0; i < stack_size(b); i++)
-					printf("Target #%i: %i\n", i, b->target_node->nbr);
-				//print_stack(&b);
-				break ;
-				//push_swap(&b, &a); // next steps: assign a targets to b nodes, calc costs and find cheapest push_a(&a, &b);
+				push_cost(a, b);
+				//push_swap(&b, &a); //calc costs and find cheapest push_a(&a, &b);
 			}
-			break ;
 		}
+		break ;
 		if (stack_size(b) == 0)
 			break ;
 	}
@@ -488,10 +558,10 @@ int	main(int argc, char **argv)
 	else if (argc > 2)
 		handle_input(argv, argc, &b);
 	update_indexes(&a, &b);
-	printf("\nbefore:\n a:\n");
-	print_stack(&a);
-	printf("\nb:\n");
-	print_stack(&b);
+	// printf("\nbefore:\n a:\n");
+	// print_stack(&a);
+	// printf("\nb:\n");
+	// print_stack(&b);
 	// s(&a, 'a');
 	// push_a(&a, &b);
 	// rr(&a, &b);

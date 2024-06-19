@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   push_swap.c                                        :+:      :+:    :+:   */
+/*   push_swap1.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eaktimur <eaktimur@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:24:17 by eaktimur          #+#    #+#             */
-/*   Updated: 2024/06/18 15:48:16 by eaktimur         ###   ########.fr       */
+/*   Updated: 2024/06/19 16:17:44 by eaktimur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,10 +157,12 @@ void	ft_split(char **argv, char c, t_l **a)
 	char	*str;
 	int		num;
 	int		is_num_started;
+	int		is_negative;
 
 	a_list = NULL;
 	num = 0;
 	is_num_started = 0;
+	is_negative = 0;
 	str = argv[1];
 	while (*str)
 	{
@@ -168,18 +170,27 @@ void	ft_split(char **argv, char c, t_l **a)
 		{
 			if (is_num_started)
 			{
+				if (is_negative)
+					num = -num;
 				if (check_doubles(a_list, num))
 					exit_error();
 				populate_a(&a_list, num);
 				is_num_started = 0;
+				is_negative = 0;
 			}
 		}
-		else if (is_num(*str))
+		else if (is_num(*str) || (*str == '-' && !is_num_started))
 		{
 			if (!is_num_started)
 			{
 				is_num_started = 1;
 				num = 0;
+				if (*str == '-')
+				{
+					is_negative = 1;
+					str++;
+					continue ;
+				}
 			}
 			num = num * 10 + (*str - '0');
 		}
@@ -189,6 +200,8 @@ void	ft_split(char **argv, char c, t_l **a)
 	}
 	if (is_num_started)
 	{
+		if (is_negative)
+			num = -num;
 		if (check_doubles(a_list, num))
 			exit_error();
 		populate_a(&a_list, num);
@@ -207,9 +220,8 @@ void	update_indexes(t_l **a, t_l **b)
 		index = 0;
 		while (current)
 		{
-			current->index = index;
+			current->index = index++;
 			current = current->next;
-			index++;
 		}
 	}
 	if (b && *b)
@@ -218,9 +230,8 @@ void	update_indexes(t_l **a, t_l **b)
 		index = 0;
 		while (current)
 		{
-			current->index = index;
+			current->index = index++;
 			current = current->next;
-			index++;
 		}
 	}
 }
@@ -377,17 +388,17 @@ void	three_elem_sort(t_l **a)
 	// 	exit_free_list(a);
 }
 
-void	update_targets(t_l *a, t_l *b)
+void	update_targets(t_l **a, t_l **b)
 {
 	t_l	*b_current;
-	t_l	*closest;
 	t_l	*a_current;
+	t_l	*closest;
 
-	b_current = b;
+	b_current = *b;
 	while (b_current != NULL)
 	{
 		closest = NULL;
-		a_current = a;
+		a_current = *a;
 		while (a_current != NULL)
 		{
 			if (a_current->nbr > b_current->nbr)
@@ -399,75 +410,218 @@ void	update_targets(t_l *a, t_l *b)
 			}
 			a_current = a_current->next;
 		}
+		if (closest == NULL)
+			closest = find_highest(*a);
 		b_current->target_node = closest;
 		b_current = b_current->next;
 	}
 }
 
-void	actual_push_swap(t_l *a, t_l *b)
+void	update_median(t_l **stack)
 {
-	while (stack_size(a) >= 3)
+	t_l	*current;
+	int	total_nodes;
+	int	index;
+	int	mid;
+
+	if (stack == NULL || *stack == NULL)
 	{
-		if (stack_size(a) > 3)
+		return ;
+	}
+	current = *stack;
+	total_nodes = stack_size(current);
+	while (current != NULL)
+	{
+		index = current->index;
+		mid = total_nodes / 2;
+		if (index < mid)
+			current->median = 1;
+		else
+			current->median = -1;
+		current = current->next;
+	}
+}
+
+t_l	*push_cost(t_l **a_node, t_l **b_node)
+{
+	t_l	*b;
+	t_l	*a;
+	t_l	*cheapest;
+	int	min_cost;
+	int	temp;
+
+	b = *b_node;
+	cheapest = NULL;
+	min_cost = INT_MAX;
+	while (b != NULL)
+	{
+		a = b->target_node;
+		b->push_cost = 0;
+		temp = a->index + b->index;
+		if (b->index + (stack_size(*a_node) - a->index) < temp)
+			temp = b->index + (stack_size(*a_node) - a->index);
+		if (a->index + (stack_size(*b_node) - b->index) < temp)
+			temp = a->index + (stack_size(*b_node) - b->index);
+		if ((stack_size(*a_node) - a->index) + (stack_size(*b_node)
+				- b->index) < temp)
+			temp = (stack_size(*a_node) - a->index) + (stack_size(*b_node)
+					- b->index);
+		b->push_cost = temp;
+		if (b->push_cost < min_cost)
 		{
-			if (a == find_highest(a))
-				r(&a, 'a');
-			push_b(&a, &b);
+			min_cost = b->push_cost;
+			cheapest = b;
+		}
+		b = b->next;
+	}
+	return (cheapest);
+}
+
+void	execute_operations(t_l **a, t_l **b, t_l *to_push)
+{
+	t_l	*target;
+
+	target = to_push->target_node;
+	while (to_push->index > 0 && target->index > 0)
+	{
+		if (to_push->median == 1 && target->median == 1)
+			rr(a, b);
+		else if (to_push->median == -1 && target->median == -1)
+			rrr(a, b);
+		else
+			break ;
+	}
+	while (to_push->index > 0)
+	{
+		if (to_push->median == 1)
+			r(b, 'b');
+		else if (to_push->median == -1)
+			reverse_rotate(b, 'b');
+	}
+	while (target->index > 0)
+	{
+		if (target->median == 1)
+			r(a, 'a');
+		else if (target->median == -1)
+			reverse_rotate(a, 'a');
+	}
+}
+
+int	find_lowest(t_l **stack)
+{
+	t_l	*lowest;
+	t_l	*current;
+
+	lowest = *stack;
+	current = *stack;
+	while (current != NULL)
+	{
+		if (current->nbr < lowest->nbr)
+			lowest = current;
+		current = current->next;
+	}
+	return (lowest->index);
+}
+
+int	find_lowest2(t_l **stack)
+{
+	t_l	*lowest;
+	t_l	*current;
+
+	lowest = *stack;
+	current = *stack;
+	while (current != NULL)
+	{
+		if (current->nbr < lowest->nbr)
+			lowest = current;
+		current = current->next;
+	}
+	return (lowest->median);
+}
+
+void	final_rotate(t_l **a)
+{
+	int	index;
+	int	median;
+	int	i;
+
+	index = find_lowest(a);
+	median = find_lowest2(a);
+	i = 0;
+	if (median == -1)
+	{
+		while(i < (stack_size(*a) - index))
+		{
+			reverse_rotate(a, 'a');
+			i++;
+		}
+	}
+	else if (median == 1)
+	{
+		while(i < index)
+		{
+			r(a, 'a');
+			i++;
+		}
+	}
+}
+
+void	actual_push_swap(t_l **a, t_l **b)
+{
+	t_l	*to_push;
+
+	while (stack_size(*a) >= 3)
+	{
+		if (stack_size(*a) > 3)
+		{
+			if (*a == find_highest(*a))
+				r(a, 'a');
+			push_b(a, b);
 		}
 		else
 		{
-			three_elem_sort(&a);
-			while (stack_size(b) > 0)
+			three_elem_sort(a);
+			while (stack_size(*b) > 0)
 			{
+				// update_targets(a, b);
+				// printf("stack size b: %i\n", stack_size(*b));
+				// for (int i = 0; i < stack_size(*b); i++)
+				// 	printf("Target #%i: %i\n", i, (*b)->target_node->nbr);
+				// // print_stack(&b);
+				// break ;
+				// // push_swap(&b, &a);
+				//
+				// next steps: assign a targets to b nodes,calc costs and find cheapest push_a(&a,	&b);
+				update_indexes(a, b);
 				update_targets(a, b);
-				printf("stack size b: %i\n", stack_size(b));
-				for (int i = 0; i < stack_size(b); i++)
-					printf("Target #%i: %i\n", i, b->target_node->nbr);
-				//print_stack(&b);
-				break ;
-				//push_swap(&b, &a); // next steps: assign a targets to b nodes, calc costs and find cheapest push_a(&a, &b);
+				to_push = push_cost(a, b); //
+				update_median(a);
+				update_median(b);
+				execute_operations(a, b, to_push); //
+				push_a(a, b);
 			}
-			break ;
+			// break ;
 		}
-		if (stack_size(b) == 0)
+		if (stack_size(*b) == 0)
 			break ;
 	}
-	// update_median(a);
-	// find_lowest(a);
-	// final_rotate(&a);
-	if (stack_size(b) == 0 && is_sorted(a))
-		printf("Sorted");
+	update_median(a);
+	final_rotate(a);
+	// if (stack_size(*b) == 0 && is_sorted(*a))
+	// 	printf("Sorted");
 }
 
-void	sizebased_operation(t_l *a, t_l *b)
+void	sizebased_operation(t_l **a, t_l **b)
 {
-	// if (is_sorted(a))
-	// 	exit_free_list(a);
-	if (stack_size(a) == 2)
-		two_elem_sort(a);
-	if (stack_size(a) == 3)
-		three_elem_sort(&a); //
+	if (is_sorted(*a))
+		exit_free_list(*a);
+	if (stack_size(*a) == 2)
+		two_elem_sort(*a);
+	else if (stack_size(*a) == 3)
+		three_elem_sort(a);
 	else
-		actual_push_swap(a, b);//
-	// point_to_first(&a, NULL);
-}
-
-void	point_to_first(t_l **list, t_l **list2)
-{
-	if (list && *list)
-	{
-		while (*list && (*list)->prev != NULL)
-		{
-			*list = (*list)->prev;
-		}
-	}
-	if (list2 && *list2)
-	{
-		while (*list && (*list)->prev != NULL)
-		{
-			*list = (*list)->prev;
-		}
-	}
+		actual_push_swap(a, b);
+	// point_to_first(a, b);
 }
 
 int	main(int argc, char **argv)
@@ -479,30 +633,21 @@ int	main(int argc, char **argv)
 	b = NULL;
 	if (argc == 1 || (argc == 2 && !argv[1][0]))
 		return (1);
-	else if (argc == 2)
+	if (argc == 2)
 		ft_split(argv, ' ', &a);
 	else if (argc > 2)
 		handle_input(argv, argc, &a);
-	if (argc == 2)
-		ft_split(argv, ' ', &b);
-	else if (argc > 2)
-		handle_input(argv, argc, &b);
 	update_indexes(&a, &b);
-	printf("\nbefore:\n a:\n");
-	print_stack(&a);
-	printf("\nb:\n");
-	print_stack(&b);
-	// s(&a, 'a');
-	// push_a(&a, &b);
-	// rr(&a, &b);
-	// reverse_rotate(&a, 'a');
-	// ss(&a, &b);
-	sizebased_operation(a, b);
-	point_to_first(&a, NULL);
-	printf("\nafter:\n a:\n");
-	print_stack(&a);
-	printf("\nb:\n");
-	print_stack(&b);
-	// sort(a, b);
+	// printf("\nbefore:\n a:\n");
+	// print_stack(&a);
+	// printf("\nb:\n");
+	// print_stack(&b);
+	sizebased_operation(&a, &b);
+	// point_to_first(&a, &b);
+//	printf("\nafter:\n a:\n");
+//	print_stack(&a);
+//	printf("\nb:\n");
+//	print_stack(&b);
 	exit_free_list(a);
+	return (0);
 }
